@@ -1,0 +1,4 @@
+*           text=auto
+*.cnf       text eol=lf
+*.ext       text eol=lf
+*.sh        text eol=lf

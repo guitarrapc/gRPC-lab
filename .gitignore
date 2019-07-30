@@ -362,3 +362,4 @@ src/grpc_HelloworldUnity/Assets/Plugins/
 *.crt
 *.csr
 *.pem
+*.srl

@@ -22,9 +22,11 @@ namespace GreeterServer
 {
     class GreeterImpl : Greeter.GreeterBase
     {
+        private static int count = 0;
         // Server side handler of the SayHello RPC
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
         {
+            Console.WriteLine($"request commint: {count++}");
             return Task.FromResult(new HelloReply { Message = "Hello Server " + request.Name });
         }
     }
@@ -35,13 +37,13 @@ namespace GreeterServer
 
         public static void Main(string[] args)
         {
-            var credentials = GetServerCredentials(SslClientCertificateRequestType.RequestAndVerify);
+            var credentials = GetServerCredentials(SslClientCertificateRequestType.DontRequest);
 
             Server server = new Server
             {
                 Services = { Greeter.BindService(new GreeterImpl()) },
                 //Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
-                Ports = { new ServerPort("localhost", Port, credentials) }
+                Ports = { new ServerPort("dummy.example.com", Port, credentials) }
             };
             server.Start();
 

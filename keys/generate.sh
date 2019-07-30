@@ -14,7 +14,7 @@ openssl genrsa -aes256 -out server.key -passout file:passphrase.txt 4096
 openssl req -new -key server.key -out server.csr -passin file:passphrase.txt -subj "/C=JP/ST=Example/L=Tokyo/O=Example/OU=Example/CN=dummy.example.com"
 
 # Self-sign server certificate:
-openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out server.crt -passin file:passphrase.txt
+openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -passin file:passphrase.txt
 
 # Remove passphrase from the server key:
 openssl rsa -in server.key -out server.key -passin file:passphrase.txt

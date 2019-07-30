@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System;
 using Grpc.Core;
 using Helloworld;
+using System.IO;
 
 class HelloWorldTest
 {
@@ -51,7 +52,9 @@ class HelloWorldTest
         const int Port = 50051;
         //var server = StarServer(Port);
 
-        Channel channel = new Channel($"127.0.0.1:{Port}", ChannelCredentials.Insecure);
+        //Channel channel = new Channel($"127.0.0.1:{Port}", ChannelCredentials.Insecure);
+        var credentials = GetClientCredentials();
+        Channel channel = new Channel($"dummy.example.com:{Port}", credentials);
         var client = new Greeter.GreeterClient(channel);
         var reply = client.SayHello(new HelloRequest { Name = greeting });
 
@@ -60,6 +63,16 @@ class HelloWorldTest
         //server.ShutdownAsync().Wait();
 
         return reply;
+    }
+
+    private static ChannelCredentials GetClientCredentials()
+    {
+        var rootCert = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "ca.crt"));
+        var clientCert = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "client.crt"));
+        var clientKey = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "client.key"));
+
+        var credentials = new SslCredentials(rootCert, new KeyCertificatePair(clientCert, clientKey));
+        return credentials;
     }
 
     private static Server StarServer(int port)
