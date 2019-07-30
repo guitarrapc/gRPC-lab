@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Helloworld;
@@ -34,10 +35,13 @@ namespace GreeterServer
 
         public static void Main(string[] args)
         {
+            var credentials = GetServerCredentials(SslClientCertificateRequestType.RequestAndVerify);
+
             Server server = new Server
             {
                 Services = { Greeter.BindService(new GreeterImpl()) },
-                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+                //Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort("localhost", Port, credentials) }
             };
             server.Start();
 
@@ -46,6 +50,20 @@ namespace GreeterServer
             Console.ReadKey();
 
             server.ShutdownAsync().Wait();
+        }
+
+        private static ServerCredentials GetServerCredentials(SslClientCertificateRequestType sslClientCertificateRequestType)
+        {
+            var rootCert = File.ReadAllText("keys/ca.crt");
+            var serverCert = File.ReadAllText("keys/server.crt");
+            var serverKey = File.ReadAllText("keys/server.key");
+
+            var credentials = new SslServerCredentials(
+                new[] { new KeyCertificatePair(serverCert, serverKey) },
+                rootCert,
+                sslClientCertificateRequestType
+            );
+            return credentials;
         }
     }
 }

@@ -9,4 +9,23 @@
     <ProjectReference Include="..\Greeter\Greeter.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\..\keys\*" LinkBase="keys" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="..\..\..\keys\ca.crt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+	<None Update="..\..\..\keys\server.crt">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Update="..\..\..\keys\server.key">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+	<None Update="..\..\..\keys\roots.pem">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
 </Project>
