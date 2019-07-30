@@ -356,3 +356,9 @@ MigrationBackup/
 # unity plugins
 src/grpc_HelloworldUnity/Assets/Plugins/
 *.zip
+
+# certificate key
+*.key
+*.crt
+*.csr
+*.pem
