@@ -84,3 +84,21 @@ check your domain's certificate chain & root certificate authority is using let'
 ```shell
 $ openssl s_client -showcerts -verify 5 -connect YOUR.DOMAIN.com:443 < /dev/null
 ```
+
+
+
+## ref:
+
+ssl/tls
+
+* https://gist.github.com/guitarrapc/f5e8aadc6d67d5ad8484c70bfff540be
+* https://kazuhira-r.hatenablog.com/entry/20180803/1533302929
+
+grpc
+
+* https://github.com/guitarrapc/gRPC-lab/tree/master/src/grpc_HelloworldUnity
+* https://github.com/grpc/grpc/blob/master/etc/roots.pem
+* https://qiita.com/mxProject/items/1cd0f6e5f53d5fe638ac
+* https://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt#l4845
+* https://nekonenene.hatenablog.com/entry/2019/02/17/073806
+* https://nekonenene.hatenablog.com/entry/grpc-nginx-proxy
