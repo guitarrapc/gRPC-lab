@@ -353,4 +353,6 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-
+# unity plugins
+src/grpc_HelloworldUnity/Assets/Plugins/
+*.zip

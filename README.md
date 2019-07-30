@@ -1,1 +1,11 @@
-gRPC-lab
+# gRPC-lab
+
+## Getttings started
+
+run following on repository root to restore gRPC Unity Plugins.
+
+```shell
+# macOS/Linux/WSL
+$ curl https://packages.grpc.io/archive/2019/07/b8b6df08ae6d9f60e1b282a659d26b8c340de5c9-1785a3f7-80cd-4809-bd74-e8a0871cdff2/csharp/grpc_unity_package.1.23.0-dev.zip -o grpc_unity_package.zip -J -L
+$ unzip grpc_unity_package.zip -d ./src/grpc_HelloworldUnity/Assets
+```
