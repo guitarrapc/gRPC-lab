@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.IO;
 using Grpc.Core;
 using Helloworld;
 
@@ -22,7 +23,10 @@ namespace GreeterClient
     {
         public static void Main(string[] args)
         {
-            Channel channel = new Channel("127.0.0.1:50051", ChannelCredentials.Insecure);
+            var caCert = File.ReadAllText("keys/ca.crt");
+            var credentials = new SslCredentials(caCert);
+            //Channel channel = new Channel("dummy.example.com:50051", ChannelCredentials.Insecure);
+            Channel channel = new Channel("dummy.example.com:50051", credentials);
 
             var client = new Greeter.GreeterClient(channel);
             String user = "you";

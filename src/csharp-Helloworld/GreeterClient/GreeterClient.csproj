@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -7,6 +7,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Greeter\Greeter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\keys\*" LinkBase="keys" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="..\..\..\keys\ca.crt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

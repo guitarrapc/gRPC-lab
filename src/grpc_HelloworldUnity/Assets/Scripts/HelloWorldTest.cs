@@ -53,7 +53,8 @@ class HelloWorldTest
         //var server = StarServer(Port);
 
         //Channel channel = new Channel($"127.0.0.1:{Port}", ChannelCredentials.Insecure);
-        var credentials = GetClientCredentials();
+        //var credentials = GetClientCredentials();
+        var credentials = GetRootCertificateCredentials();
         Channel channel = new Channel($"dummy.example.com:{Port}", credentials);
         var client = new Greeter.GreeterClient(channel);
         var reply = client.SayHello(new HelloRequest { Name = greeting });
@@ -72,6 +73,14 @@ class HelloWorldTest
         var clientKey = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "client.key"));
 
         var credentials = new SslCredentials(rootCert, new KeyCertificatePair(clientCert, clientKey));
+        return credentials;
+    }
+
+    private static ChannelCredentials GetRootCertificateCredentials()
+    {
+        var rootCert = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "ca.crt"));
+
+        var credentials = new SslCredentials(rootCert);
         return credentials;
     }
 

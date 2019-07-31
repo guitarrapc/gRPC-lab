@@ -46,6 +46,7 @@ Server side C# project will load generated keys on build automatically.
 Client side Unity project required to copy.
 
 ```shell
+mkdir src/grpc_HelloworldUnity/Assets/StreamingAssets
 cp keys/ca.crt src/grpc_HelloworldUnity/Assets/StreamingAssets/.
 cp keys/client.crt src/grpc_HelloworldUnity/Assets/StreamingAssets/.
 cp keys/client.key src/grpc_HelloworldUnity/Assets/StreamingAssets/.
