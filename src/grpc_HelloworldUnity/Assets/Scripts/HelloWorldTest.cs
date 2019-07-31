@@ -71,14 +71,31 @@ class HelloWorldTest
         var rootCert = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "ca.crt"));
         var clientCert = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "client.crt"));
         var clientKey = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "client.key"));
-
         var credentials = new SslCredentials(rootCert, new KeyCertificatePair(clientCert, clientKey));
         return credentials;
     }
 
     private static ChannelCredentials GetRootCertificateCredentials()
     {
-        var rootCert = File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "ca.crt"));
+        var rootCert = "";
+        var assetPath = UnityEngine.Application.streamingAssetsPath;
+        var path = Path.Combine(assetPath, "ca.crt");
+#if UNITY_IOS
+        using (var streamReader = new StreamReader(path))
+        {
+            rootCert = streamReader.ReadToEnd();
+        }
+#elif UNITY_ANDROID
+        var www = new WWW(path);
+        while (!www.isDone) {}
+
+        using (var txtReader = new StringReader(www.text))
+        {
+            rootCert = txtReader.ReadToEnd();
+        }
+#else
+        rootCert = File.ReadAllText(path);
+#endif
 
         var credentials = new SslCredentials(rootCert);
         return credentials;
