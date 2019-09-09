@@ -1,0 +1,6 @@
+resources:
+- greet-deployment.yaml
+- greet-service.yaml
+- envoy-configmap.yaml
+- envoy-deployment.yaml
+- envoy-service.yaml

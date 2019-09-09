@@ -1,0 +1,18 @@
+version: '2'
+services:
+  server:
+    container_name: grpc_greeter_server
+    build:
+      context: .
+      dockerfile: GreeterServer/Dockerfile
+    expose:
+      - 50051
+    ports:
+      - 50051:50051
+  client:
+    container_name: grpc_greeter_client
+    build:
+      context: .
+      dockerfile: GreeterClient/Dockerfile
+    links:
+      - server
