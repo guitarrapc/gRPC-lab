@@ -1,3 +1,5 @@
+## Run
+
 docker
 
 ```
@@ -33,3 +35,15 @@ kubectl get svc
 kubectl kustomize k8s/envoy/base | kubectl delete -f -
 ```
 
+
+## REF
+
+> [Amazon EKSでgRPCサーバを運用する \- 一休\.com Developers Blog](https://user-first.ikyu.co.jp/entry/2019/08/27/093858)
+>
+> [Using Envoy Proxy to load\-balance gRPC services on GKE  \|  Solutions  \|  Google Cloud](https://cloud.google.com/solutions/exposing-grpc-services-on-gke-using-envoy-proxy)
+>
+> [GoogleCloudPlatform/grpc\-gke\-nlb\-tutorial: gRPC load\-balancing on GKE using Envoy](https://github.com/GoogleCloudPlatform/grpc-gke-nlb-tutorial)
+> 
+> [grpc\-ecosystem/grpc\-health\-probe: A command\-line tool to perform health\-checks for gRPC applications in Kubernetes etc\.](https://github.com/grpc-ecosystem/grpc-health-probe/)
+>
+> [Health checking gRPC servers on Kubernetes \- Kubernetes](https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/)
