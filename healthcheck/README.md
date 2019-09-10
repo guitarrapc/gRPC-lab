@@ -46,16 +46,16 @@ services:
 > [guitarrapc/grpc-example-client-csharp](https://cloud.docker.com/u/guitarrapc/repository/docker/guitarrapc/grpc-example-client-csharp)
 
 ```
-docker build -t grpc-example-server-csharp:v0.0.1 -f GreeterServer/Dockerfile .
-docker tag grpc-example-server-csharp:v0.0.1 guitarrapc/grpc-example-server-csharp:v0.0.1
-docker tag grpc-example-server-csharp:v0.0.1 guitarrapc/grpc-example-server-csharp:latest
-docker push guitarrapc/grpc-example-server-csharp:v0.0.1
+docker build -t grpc-example-server-csharp:v0.0.2 -f GreeterServer/Dockerfile .
+docker tag grpc-example-server-csharp:v0.0.2 guitarrapc/grpc-example-server-csharp:v0.0.2
+docker tag grpc-example-server-csharp:v0.0.2 guitarrapc/grpc-example-server-csharp:latest
+docker push guitarrapc/grpc-example-server-csharp:v0.0.2
 docker push guitarrapc/grpc-example-server-csharp:latest
 
-docker build -t grpc-example-client-csharp:v0.0.1 -f GreeterClient/Dockerfile .
-docker tag grpc-example-client-csharp:v0.0.1 guitarrapc/grpc-example-client-csharp:v0.0.1
-docker tag grpc-example-client-csharp:v0.0.1 guitarrapc/grpc-example-client-csharp:latest
-docker push guitarrapc/grpc-example-client-csharp:v0.0.1
+docker build -t grpc-example-client-csharp:v0.0.2 -f GreeterClient/Dockerfile .
+docker tag grpc-example-client-csharp:v0.0.2 guitarrapc/grpc-example-client-csharp:v0.0.2
+docker tag grpc-example-client-csharp:v0.0.2 guitarrapc/grpc-example-client-csharp:latest
+docker push guitarrapc/grpc-example-client-csharp:v0.0.2
 docker push guitarrapc/grpc-example-client-csharp:latest
 ```
 
@@ -74,11 +74,11 @@ Server
 ```
 # build
 pushd ./src/Greeter
-docker build -t grpc-example-server-csharp:v0.0.1 -f GreeterServer/Dockerfile .
+docker build -t grpc-example-server-csharp:v0.0.2 -f GreeterServer/Dockerfile .
 popd
 
 # run
-docker run -it --rm -p 50051:50051 grpc-example-server-csharp:v0.0.1
+docker run -it --rm -p 50051:50051 grpc-example-server-csharp:v0.0.2
 ```
 
 Client
@@ -86,11 +86,11 @@ Client
 ```
 # build
 pushd ./src/Greeter
-docker build -t grpc-example-client-csharp:v0.0.1 -f GreeterClient/Dockerfile .
+docker build -t grpc-example-client-csharp:v0.0.2 -f GreeterClient/Dockerfile .
 popd
 
 # run
-docker run -it --rm grpc-example-client-csharp:v0.0.1
+docker run -it --rm grpc-example-client-csharp:v0.0.2
 ```
 
 ## REF
