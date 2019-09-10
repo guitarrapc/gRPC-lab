@@ -9,7 +9,7 @@ data:
       - address:
           socket_address:
             address: 0.0.0.0
-            port_value: 50051
+            port_value: 50051 # <- grpc port direct foward
         filter_chains:
         - filters:
           - name: envoy.http_connection_manager
@@ -23,14 +23,14 @@ data:
               route_config:
                 name: local_route
                 virtual_hosts:
-                - name: https
+                - name: grpc # <- no meaning, just a name.
                   domains:
                   - "*"
                   routes:
                   - match:
                       prefix: "/"
                     route:
-                      cluster: greet-grpc
+                      cluster: greet-grpc-svc # <- cluster name
               http_filters:
               - name: envoy.health_check
                 config:
@@ -43,24 +43,25 @@ data:
               - name: envoy.router
                 config: {}
       clusters:
-      - name: greet-grpc
+      - name: greet-grpc-svc
         connect_timeout: 0.5s
         type: STRICT_DNS
         dns_lookup_family: V4_ONLY
         lb_policy: ROUND_ROBIN
-        drain_connections_on_host_removal: true # <- must. drain when pod was removed from backend service.
+        drain_connections_on_host_removal: true # <- must on grpc loadbalance with envoy. drain when pod was removed from backend service.
         http2_protocol_options: {}
         hosts:
           socket_address:
-            address: greet-grpc.default.svc.cluster.local
-            port_value: 50051
-        health_checks:
+            #address: greet-grpc-svc.default.svc.cluster.local # <- if no namespace, `default` will be used.
+            address: greet-grpc-svc.grpc-lab-nlb.svc.cluster.local # <- if you specify namespace `grpc-lab-nlb`, set here.
+            port_value: 50051  # <- grpc port direct foward
+        health_checks: # <- required for cluster health check.
           timeout: 1s
           interval: 10s
           unhealthy_threshold: 2
           healthy_threshold: 2
           grpc_health_check: {
-            service_name: Check
+            service_name: Check # <- set your grpc server pod's grpc health check servie_name. Normaly name as Check.
           }
     admin:
       access_log_path: "/dev/stdout"

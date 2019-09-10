@@ -42,7 +42,7 @@ namespace GreeterClient
                 {
                     Service = "Check"
                 });
-                Console.WriteLine($"Health Checked {response.Status}:");
+                Console.WriteLine($"Health Checked {response.Status} ({response.HostName})");
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
 

@@ -9,5 +9,5 @@ spec:
   ports:
   - name: envoy
     protocol: TCP
-    port: 50051
-    targetPort: 50051
+    port: 50051 # <- grpc port direct map
+    targetPort: 50051 # <- grpc port direct map

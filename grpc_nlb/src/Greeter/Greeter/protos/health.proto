@@ -33,6 +33,7 @@ message HealthCheckResponse {
     SERVICE_UNKNOWN = 3;  // Used only by the Watch method.
   }
   ServingStatus status = 1;
+  string hostName = 2;
 }
 
 service Health {

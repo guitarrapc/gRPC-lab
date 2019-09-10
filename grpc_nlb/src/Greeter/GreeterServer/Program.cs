@@ -70,7 +70,7 @@ namespace GreeterServer
                 {
                     throw new RpcException(new Status(StatusCode.NotFound, ""));
                 }
-                return Task.FromResult(new HealthCheckResponse { Status = status });
+                return Task.FromResult(new HealthCheckResponse { Status = status, HostName = Environment.MachineName });
             }
         }
     }
