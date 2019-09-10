@@ -6,6 +6,8 @@ services:
       - 50051
     ports:
       - 50051:50051
+    environment:
+      NETCORE_ENVIRONMENT: Development
   client:
     image: guitarrapc/grpc-example-client-csharp:latest
     environment:

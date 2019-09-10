@@ -1,7 +1,10 @@
 {
   "profiles": {
     "GreeterServer": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "NETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }
