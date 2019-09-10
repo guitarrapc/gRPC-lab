@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using GrpcGreeter;
 using GrpcHealth;
+using MicroBatchFramework;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace GreeterClient
 {
@@ -26,29 +29,42 @@ namespace GreeterClient
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("connect to the server");
-            Channel channel = new Channel("localhost:50051", ChannelCredentials.Insecure);
+            await BatchHost.CreateDefaultBuilder().RunBatchEngineAsync<GrpcClient>(args);
+        }
+    }
+
+    public class GrpcClient : BatchBase
+    {
+        readonly IConfiguration config;
+        public GrpcClient(IConfiguration config)
+        {
+            this.config = config;
+        }
+
+        public async Task Run()
+        {
+            var host = config.GetValue("GRPC_HOST", "localhost");
+            var port = config.GetValue("GRPC_PORT", "50051");
+            this.Context.Logger.LogInformation($"connect to the server. {host}:{port}");
+            Channel channel = new Channel($"{host}:{port}", ChannelCredentials.Insecure);
 
             var client = new Greeter.GreeterClient(channel);
             String user = "you";
             var reply = client.SayHello(new HelloRequest { Name = user });
-            Console.WriteLine("Greeting: " + reply.Message);
+            this.Context.Logger.LogInformation("Greeting: " + reply.Message);
 
+            this.Context.Logger.LogInformation($"Begin Health Check");
             var health = new Health.HealthClient(channel);
-            for (var i = 0; i < 5000; i++)
+            for (var i = 1; i < 5000; i++)
             {
-                Console.Write($"Health Check({i}):");
                 var response = health.Check(new HealthCheckRequest
                 {
                     Service = "Check"
                 });
-                Console.WriteLine($"Health Checked {response.Status} ({response.HostName})");
+                this.Context.Logger.LogInformation($"Health Checked ({i}) {response.Status} ({response.HostName})");
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
-
             channel.ShutdownAsync().Wait();
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
         }
     }
 }
