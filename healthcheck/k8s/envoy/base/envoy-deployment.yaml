@@ -17,7 +17,7 @@ spec:
         image: envoyproxy/envoy-alpine:v1.9.1
         ports:
         - name: http
-          containerPort: 443
+          containerPort: 50051
         volumeMounts:
         - name: config
           mountPath: /etc/envoy
@@ -28,7 +28,7 @@ spec:
             httpHeaders:
             - name: x-envoy-livenessprobe
               value: healthz
-            port: 443
+            port: 50051
           initialDelaySeconds: 3
         livenessProbe:
           httpGet:
@@ -37,7 +37,7 @@ spec:
             httpHeaders:
             - name: x-envoy-livenessprobe
               value: healthz
-            port: 443
+            port: 50051
           initialDelaySeconds: 10
       volumes:
       - name: config
