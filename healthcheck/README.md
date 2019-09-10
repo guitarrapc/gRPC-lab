@@ -98,5 +98,3 @@ docker run -it --rm grpc-example-client-csharp:v0.0.1
 > [grpc\-ecosystem/grpc\-health\-probe: A command\-line tool to perform health\-checks for gRPC applications in Kubernetes etc\.](https://github.com/grpc-ecosystem/grpc-health-probe/)
 >
 > [Health checking gRPC servers on Kubernetes \- Kubernetes](https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/)
-
-> [IstioでgRPCのリクエストを振り分ける \- PartyIX](https://h3poteto.hatenablog.com/entry/2019/02/23/230211)
