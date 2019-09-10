@@ -74,11 +74,11 @@ Server
 ```
 # build
 pushd ./src/Greeter
-docker build -t grpc-example-server-csharp:v0.0.2 -f GreeterServer/Dockerfile .
+docker build -t grpc-example-server-csharp:v0.0.1 -f GreeterServer/Dockerfile .
 popd
 
 # run
-docker run -it --rm -p 50051:50051 grpc-example-server-csharp:v0.0.2
+docker run -it --rm -p 50051:50051 grpc-example-server-csharp:v0.0.1
 ```
 
 Client
@@ -86,11 +86,11 @@ Client
 ```
 # build
 pushd ./src/Greeter
-docker build -t grpc-example-client-csharp:v0.0.2 -f GreeterClient/Dockerfile .
+docker build -t grpc-example-client-csharp:v0.0.1 -f GreeterClient/Dockerfile .
 popd
 
 # run
-docker run -it --rm grpc-example-client-csharp:v0.0.2
+docker run -it --rm grpc-example-client-csharp:v0.0.1
 ```
 
 ## REF
