@@ -1,3 +1,42 @@
+## TL;DR
+
+gRPC C# Implementation with Greet and Healthcheck.
+
+You can try health check with service nanme `Check`.
+
+Run Server
+
+```
+docker run --rm -it -p 50051:50051 guitarrapc/grpc-example-server-csharp:latest
+```
+
+Run Client
+
+```
+docker run --rm -it guitarrapc/grpc-example-client-csharp:latest
+```
+
+You can use docker-compose to run both server/client.
+
+```
+version: '3'
+services:
+  server:
+    image: guitarrapc/grpc-example-server-csharp:latest
+    expose:
+      - 50051
+    ports:
+      - 50051:50051
+  client:
+    image: guitarrapc/grpc-example-client-csharp:latest
+    environment:
+      GRPC_HOST: server
+      GRPC_PORT : 50051
+    links:
+      - server
+```
+
+
 ## Run
 
 ### DockerHub
@@ -39,7 +78,7 @@ docker build -t grpc-example-server-csharp:v0.0.1 -f GreeterServer/Dockerfile .
 popd
 
 # run
-docker run -it --rm -p 50051:50051 greet-server:v0.0.1
+docker run -it --rm -p 50051:50051 grpc-example-server-csharp:v0.0.1
 ```
 
 Client
@@ -60,3 +99,4 @@ docker run -it --rm grpc-example-client-csharp:v0.0.1
 >
 > [Health checking gRPC servers on Kubernetes \- Kubernetes](https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/)
 
+> [IstioでgRPCのリクエストを振り分ける \- PartyIX](https://h3poteto.hatenablog.com/entry/2019/02/23/230211)

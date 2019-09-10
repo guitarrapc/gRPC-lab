@@ -1,0 +1,15 @@
+version: '3'
+services:
+  server:
+    image: guitarrapc/grpc-example-server-csharp:latest
+    expose:
+      - 50051
+    ports:
+      - 50051:50051
+  client:
+    image: guitarrapc/grpc-example-client-csharp:latest
+    environment:
+      GRPC_HOST: server
+      GRPC_PORT : 50051
+    links:
+      - server
