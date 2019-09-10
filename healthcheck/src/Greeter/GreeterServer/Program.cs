@@ -21,6 +21,7 @@ using Grpc.Core;
 using GrpcGreeter;
 using GrpcHealth;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -90,18 +91,9 @@ namespace GreeterServer
 
         public static async Task Main(string[] args)
         {
+            GrpcEnvironment.SetLogger(new Grpc.Core.Logging.ConsoleLogger());
             await new HostBuilder()
-                .ConfigureLogging((hostContext, logging) =>
-                {
-                    logging.AddConfiguration(hostContext.Configuration.GetSection("Logging"));
-                    logging.AddDebug();
-                    logging.AddEventSourceLogger();
-
-                    if (Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") == "Development")
-                    {
-                        logging.AddConsole();
-                    }
-                })
+                .ConfigureLogging(logging => logging.AddSimpleConsole())
                 .ConfigureServices((hostContext, services) =>
                 {
                     // register grpc service implementation
@@ -153,21 +145,75 @@ namespace GreeterServer
         }
     }
 
-    public class ConsoleLogger : ILogger
+    public class SimpleConsoleLoggerProvider : ILoggerProvider
     {
+        readonly SimpleConsoleLogger logger;
+
+        public SimpleConsoleLoggerProvider()
+        {
+            logger = new SimpleConsoleLogger();
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return logger;
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+
+    public class SimpleConsoleLogger : ILogger
+    {
+        public SimpleConsoleLogger()
+        {
+        }
+
         public IDisposable BeginScope<TState>(TState state)
         {
-            throw new NotImplementedException();
+            return NullDisposable.Instance;
         }
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            throw new NotImplementedException();
+            if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+
+            var msg = formatter(state, exception);
+
+
+            if (!string.IsNullOrEmpty(msg))
+            {
+                Console.WriteLine(msg);
+            }
+
+            if (exception != null)
+            {
+                Console.WriteLine(exception.ToString());
+            }
+        }
+
+        class NullDisposable : IDisposable
+        {
+            public static readonly IDisposable Instance = new NullDisposable();
+
+            public void Dispose()
+            {
+            }
+        }
+    }
+
+    public static class SimpleConsoleLoggerExtensions
+    {
+        public static ILoggingBuilder AddSimpleConsole(this ILoggingBuilder builder)
+        {
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, SimpleConsoleLoggerProvider>());
+            return builder;
         }
     }
 }
