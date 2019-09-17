@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using GrpcGreeter;
 using GrpcHealth;
+using GrpcMyVersionInfo;
 using MicroBatchFramework;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -48,12 +49,21 @@ namespace GreeterClient
             this.Context.Logger.LogInformation($"connect to the server. {host}:{port}");
             Channel channel = new Channel($"{host}:{port}", ChannelCredentials.Insecure);
 
-            var client = new Greeter.GreeterClient(channel);
+            this.Context.Logger.LogInformation($"* Begin Greet Check");
+            var greeter = new Greeter.GreeterClient(channel);
             String user = "you";
-            var reply = client.SayHello(new HelloRequest { Name = user });
-            this.Context.Logger.LogInformation("Greeting: " + reply.Message);
+            var greet = greeter.SayHello(new HelloRequest { Name = user });
+            this.Context.Logger.LogInformation("Greeting: " + greet.Message);
 
-            this.Context.Logger.LogInformation($"Begin Health Check");
+            this.Context.Logger.LogInformation($"* Begin Version Check");
+            var myversion = new MyVersionInfo.MyVersionInfoClient(channel);
+            var v = myversion.Get(new MyVersionInfoRequest
+            {
+                Message = "hoge",
+            });
+            this.Context.Logger.LogInformation(v.Version + $"({v.Guid})");
+
+            this.Context.Logger.LogInformation($"* Begin Health Check");
             var health = new Health.HealthClient(channel);
             var response = health.Check(new HealthCheckRequest
             {

@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using GrpcGreeter;
 using GrpcHealth;
+using GrpcMyVersionInfo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -39,6 +40,30 @@ namespace GreeterServer
             return Task.FromResult(new HelloReply { Message = "Hello Server " + request.Name });
         }
     }
+    class MyVersionInfoImpl: MyVersionInfo.MyVersionInfoBase
+    {
+        readonly string version;
+        readonly string guid;
+        readonly ILogger<MyVersionInfoImpl> logger;
+
+        public MyVersionInfoImpl(ILogger<MyVersionInfoImpl> logger)
+        {
+            this.logger = logger;
+            version = "0.3";
+            guid = Guid.NewGuid().ToString();
+            Console.WriteLine("hogemogehogemoge");
+        }
+        // Server side handler of the SayHello RPC
+        public override Task<MyVersionInfoReply> Get(MyVersionInfoRequest request, ServerCallContext context)
+        {
+            return Task.FromResult(new MyVersionInfoReply
+            {
+                Version = version,
+                Guid = guid,
+            });
+        }
+    }
+
     class HealthImpl : GrpcHealth.Health.HealthBase
     {
         readonly object myLock = new object();
@@ -80,15 +105,15 @@ namespace GreeterServer
                 {
                     throw new RpcException(new Status(StatusCode.NotFound, ""));
                 }
-                var res = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = status });
-                var ns = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.NotServing });
-                var su = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.ServiceUnknown });
-                var s = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Serving });
-                var u = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Unknown });
-                var ub = new byte[] { }; // unknown
-                var sb = new byte[] { 8, 1 }; // serving
-                var nb = new byte[] { 8, 2 }; // notserving
-                var sub = new byte[] { 8, 3 }; // service unknown
+                // var res = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = status });
+                // var ns = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.NotServing });
+                // var su = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.ServiceUnknown });
+                // var s = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Serving });
+                // var u = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Unknown });
+                // var ub = new byte[] { }; // unknown
+                // var sb = new byte[] { 8, 1 }; // serving
+                // var nb = new byte[] { 8, 2 }; // notserving
+                // var sub = new byte[] { 8, 3 }; // service unknown
                 return Task.FromResult(new HealthCheckResponse { Status = status });
             }
         }
@@ -108,11 +133,16 @@ namespace GreeterServer
                     // register grpc service implementation
                     services.AddSingleton<HealthImpl>();
                     services.AddSingleton<GreeterImpl>();
+                    services.AddSingleton<MyVersionInfoImpl>();
 
                     var provider = services.BuildServiceProvider();
                     Server server = new Server
                     {
-                        Services = { Greeter.BindService(provider.GetService<GreeterImpl>()) },
+                        Services =
+                        {
+                            Greeter.BindService(provider.GetService<GreeterImpl>()),
+                            MyVersionInfo.BindService(provider.GetService<MyVersionInfoImpl>()),
+                        },
                         Ports = { new ServerPort("0.0.0.0", Port, ServerCredentials.Insecure) }
                     };
                     RegisterHealthCheck(server, "Check", provider);
