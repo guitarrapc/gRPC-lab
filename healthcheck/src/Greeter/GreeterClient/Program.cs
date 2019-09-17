@@ -55,15 +55,11 @@ namespace GreeterClient
 
             this.Context.Logger.LogInformation($"Begin Health Check");
             var health = new Health.HealthClient(channel);
-            for (var i = 1; i < 5000; i++)
+            var response = health.Check(new HealthCheckRequest
             {
-                var response = health.Check(new HealthCheckRequest
-                {
-                    Service = "Check"
-                });
-                this.Context.Logger.LogInformation($"Health Checked ({i}) {response.Status}");
-                await Task.Delay(TimeSpan.FromSeconds(1));
-            }
+                Service = "Check"
+            });
+            this.Context.Logger.LogInformation($"Health Checked: {response.Status}");
             channel.ShutdownAsync().Wait();
         }
     }
