@@ -46,17 +46,23 @@ services:
 > [guitarrapc/grpc-example-client-csharp](https://cloud.docker.com/u/guitarrapc/repository/docker/guitarrapc/grpc-example-client-csharp)
 
 ```
-docker build -t grpc-example-server-csharp:v0.0.2 -f GreeterServer/Dockerfile .
-docker tag grpc-example-server-csharp:v0.0.2 guitarrapc/grpc-example-server-csharp:v0.0.2
-docker tag grpc-example-server-csharp:v0.0.2 guitarrapc/grpc-example-server-csharp:latest
-docker push guitarrapc/grpc-example-server-csharp:v0.0.2
+pushd src/Greeter
+docker build -t grpc-example-server-csharp:v0.0.3 -f GreeterServer/Dockerfile .
+docker tag grpc-example-server-csharp:v0.0.3 guitarrapc/grpc-example-server-csharp:v0.0.3
+docker tag grpc-example-server-csharp:v0.0.3 guitarrapc/grpc-example-server-csharp:latest
+docker push guitarrapc/grpc-example-server-csharp:v0.0.3
 docker push guitarrapc/grpc-example-server-csharp:latest
+popd
+```
 
-docker build -t grpc-example-client-csharp:v0.0.2 -f GreeterClient/Dockerfile .
-docker tag grpc-example-client-csharp:v0.0.2 guitarrapc/grpc-example-client-csharp:v0.0.2
-docker tag grpc-example-client-csharp:v0.0.2 guitarrapc/grpc-example-client-csharp:latest
-docker push guitarrapc/grpc-example-client-csharp:v0.0.2
+```
+pushd src/Greeter
+docker build -t grpc-example-client-csharp:v0.0.3 -f GreeterClient/Dockerfile .
+docker tag grpc-example-client-csharp:v0.0.3 guitarrapc/grpc-example-client-csharp:v0.0.3
+docker tag grpc-example-client-csharp:v0.0.3 guitarrapc/grpc-example-client-csharp:latest
+docker push guitarrapc/grpc-example-client-csharp:v0.0.3
 docker push guitarrapc/grpc-example-client-csharp:latest
+popd
 ```
 
 ### Server & Client
