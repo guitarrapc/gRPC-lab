@@ -80,7 +80,16 @@ namespace GreeterServer
                 {
                     throw new RpcException(new Status(StatusCode.NotFound, ""));
                 }
-                return Task.FromResult(new HealthCheckResponse { Status = status, HostName = Environment.MachineName });
+                var res = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = status });
+                var ns = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.NotServing });
+                var su = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.ServiceUnknown });
+                var s = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Serving });
+                var u = global::Google.Protobuf.MessageExtensions.ToByteArray(new HealthCheckResponse { Status = HealthCheckResponse.Types.ServingStatus.Unknown });
+                var ub = new byte[] { }; // unknown
+                var sb = new byte[] { 8, 1 }; // serving
+                var nb = new byte[] { 8, 2 }; // notserving
+                var sub = new byte[] { 8, 3 }; // service unknown
+                return Task.FromResult(new HealthCheckResponse { Status = status });
             }
         }
     }

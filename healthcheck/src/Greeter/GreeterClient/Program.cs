@@ -61,7 +61,7 @@ namespace GreeterClient
                 {
                     Service = "Check"
                 });
-                this.Context.Logger.LogInformation($"Health Checked ({i}) {response.Status} ({response.HostName})");
+                this.Context.Logger.LogInformation($"Health Checked ({i}) {response.Status}");
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
             channel.ShutdownAsync().Wait();
