@@ -19,8 +19,6 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: <domain>
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval: "10"
-    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "30"
 spec:
   externalTrafficPolicy: Local
   type: LoadBalancer

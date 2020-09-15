@@ -45,10 +45,6 @@ data:
                       prefix: "/api.Echo/"
                     route:
                       cluster: echo-grpc
-                  - match:
-                      prefix: "/api.Echo/"
-                    route:
-                      cluster: echo-grpc
               http_filters:
               - name: envoy.health_check
                 config:
@@ -73,6 +69,7 @@ data:
         type: STRICT_DNS
         dns_lookup_family: V4_ONLY
         lb_policy: ROUND_ROBIN
+        drain_connections_on_host_removal: true
         http2_protocol_options: {}
         load_assignment:
           cluster_name: echo-grpc
@@ -84,11 +81,13 @@ data:
                     address: echo-grpc.default.svc.cluster.local
                     port_value: 8786
         health_checks:
-          timeout: 1s
-          interval: 10s
+          timeout: 3s
+          interval: 5s
           unhealthy_threshold: 2
           healthy_threshold: 2
-          grpc_health_check: {}
+          grpc_health_check: {
+            service_name: Check
+          }
     admin:
       access_log_path: "/dev/stdout"
       address:
