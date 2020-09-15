@@ -1,0 +1,9 @@
+namespace: <namespace>
+resources:
+  - echo-deployment.yaml
+  - echo-envoy-configmap.yaml
+  - echo-service.yaml
+  - envoy-configmap.yaml
+  - envoy-deployment.yaml
+  - envoy-service.yaml
+  - namespace.yaml
