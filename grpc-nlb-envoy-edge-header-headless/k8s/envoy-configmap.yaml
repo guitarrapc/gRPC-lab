@@ -62,6 +62,10 @@ data:
                           exact_match: "echo-grpc-2"
                     route:
                       cluster: echo-grpc-2
+                  - match:
+                      prefix: "/api.Echo/"
+                    route:
+                      cluster: echo-grpc
               http_filters:
               - name: envoy.health_check
                 config:
@@ -81,6 +85,29 @@ data:
                 private_key:
                   filename: "/etc/ssl/envoy/tls.key"
       clusters:
+      - name: echo-grpc
+        connect_timeout: 0.5s
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        http2_protocol_options: {}
+        load_assignment:
+          cluster_name: echo-grpc
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: echo-grpc.default.svc.cluster.local
+                    port_value: 8081
+        health_checks:
+          timeout: 3s
+          interval: 5s
+          unhealthy_threshold: 2
+          healthy_threshold: 2
+          grpc_health_check: {
+            service_name: Check
+          }
       - name: echo-grpc-0
         connect_timeout: 0.5s
         type: STRICT_DNS
