@@ -1,0 +1,20 @@
+version: "3.4"
+
+services:
+  grpcservice:
+    image: grpcservice-ccore
+    build:
+      context: .
+      dockerfile: GrpcService/Dockerfile
+    environment:
+      USE_DELAY: 300
+      HOST_ADDRESS: 0.0.0.0
+      GRPC_SOREUSE: "1"
+  grpcclient:
+    depends_on: [grpcservice]
+    image: grpcclient-ccore
+    build:
+      context: .
+      dockerfile: GrpcClient/Dockerfile
+    environment:
+      GRPC_SERVER: grpcservice

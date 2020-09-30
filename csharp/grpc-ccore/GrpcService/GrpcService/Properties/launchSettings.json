@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "GrpcService": {
+      "commandName": "Project"
+    }
+  }
+}
