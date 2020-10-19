@@ -7,11 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" AdditionalImportDirs="client_model" />
-    <Protobuf Include="envoy/**/*.proto" GrpcServices="Server" AdditionalImportDirs="client_model" />
-    <Protobuf Include="opencensus/**/*.proto" />
-    <Protobuf Include="udpa/**/*.proto" />
-    <Protobuf Include="validate/*.proto" />
+    <Protobuf Include="Protos/greet.proto" GrpcServices="Server" />
+    <Protobuf Include="client_model/metrics.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="envoy/**/*.proto" GrpcServices="Server" 
+              Exclude="envoy/config/metrics/v3/*.proto;envoy/config/metrics/v4alpha/*.proto;envoy/config/bootstrap/v3/*.proto;envoy/config/bootstrap/v4alpha/*.proto;envoy/admin/v3/*.proto;envoy/admin/v4alpha/*.proto;envoy/service/status/v3/*.proto;envoy/service/status/v4alpha/*.proto;" 
+              OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" 
+              AdditionalImportDirs="client_model" />
+    <Protobuf Include="google/**/*.proto" 
+              Exclude="google/ads/**/*.proto;google/cloud/**/*.proto;google/devtools/**/*.proto" 
+              OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="opencensus/**/*.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="udpa/**/*.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="validate/*.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
   </ItemGroup>
 
   <ItemGroup>
