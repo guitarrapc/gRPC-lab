@@ -8,20 +8,21 @@
 
   <ItemGroup>
     <Protobuf Include="Protos/greet.proto" GrpcServices="Server" />
-    <Protobuf Include="client_model/metrics.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="envoy/**/*.proto" GrpcServices="Server" 
-              Exclude="envoy/config/metrics/v3/*.proto;envoy/config/metrics/v4alpha/*.proto;
-              envoy/config/bootstrap/v3/*.proto;envoy/config/bootstrap/v4alpha/*.proto;
-              envoy/admin/v3/*.proto;envoy/admin/v4alpha/*.proto;
-              envoy/service/status/v3/*.proto;envoy/service/status/v4alpha/*.proto;" 
+    <Protobuf Include="Protos/client_model/metrics.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="Protos/envoy/**/*.proto" ProtoRoot="Protos"
+              Exclude="Protos/envoy/config/metrics/v3/*.proto;Protos/envoy/config/metrics/v4alpha/*.proto;
+              Protos/envoy/config/bootstrap/v3/*.proto;Protos/envoy/config/bootstrap/v4alpha/*.proto;
+              Protos/envoy/admin/v3/*.proto;Protos/envoy/admin/v4alpha/*.proto;
+              Protos/envoy/service/status/v3/*.proto;Protos/envoy/service/status/v4alpha/*.proto;" 
               OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" 
-              AdditionalImportDirs="client_model" />
-    <Protobuf Include="google/**/*.proto" 
-              Exclude="google/ads/**/*.proto;google/cloud/**/*.proto;google/devtools/**/*.proto" 
+              AdditionalImportDirs="Protos/client_model" 
+              GrpcServices="Server" />
+    <Protobuf Include="Protos/google/**/*.proto" ProtoRoot="Protos"
+              Exclude="Protos/google/ads/**/*.proto;Protos/google/cloud/**/*.proto;Protos/google/devtools/**/*.proto" 
               OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="opencensus/**/*.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="udpa/**/*.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="validate/*.proto" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="Protos/opencensus/**/*.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="Protos/udpa/**/*.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="Protos/validate/*.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
   </ItemGroup>
 
   <ItemGroup>
