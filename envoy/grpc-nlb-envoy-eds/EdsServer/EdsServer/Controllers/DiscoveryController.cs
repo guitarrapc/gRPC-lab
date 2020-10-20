@@ -32,7 +32,7 @@ namespace EdsServer.Controllers
         /// <returns></returns>
         [Route("[controller]:endpoints")]
         [HttpPost]
-        public ActionResult<V2DiscoveryEndpoints> Get(Req request)
+        public ActionResult<V2DiscoveryResponse> Get(Req request)
         {
             var resourceNames = request.ResourceNames;
             if (resourceNames == null || !resourceNames.Any())
@@ -49,7 +49,7 @@ namespace EdsServer.Controllers
                 var service = _model.Get(r);
                 if (service == null)
                 {
-                    return new V2DiscoveryEndpoints
+                    return new V2DiscoveryResponse
                     {
                         VersionInfo = VERSION,
                         Resources = new[] {
@@ -77,7 +77,7 @@ namespace EdsServer.Controllers
                         },
                     })
                     .ToArray();
-                    return new V2DiscoveryEndpoints
+                    return new V2DiscoveryResponse
                     {
                         VersionInfo = VERSION,
                         Resources = new[] {

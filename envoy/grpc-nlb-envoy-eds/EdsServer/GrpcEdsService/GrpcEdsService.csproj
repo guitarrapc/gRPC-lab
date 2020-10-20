@@ -7,26 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos/greet.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos/client_model/metrics.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="Protos/envoy/**/*.proto" ProtoRoot="Protos"
-              Exclude="Protos/envoy/config/metrics/v3/*.proto;Protos/envoy/config/metrics/v4alpha/*.proto;
-              Protos/envoy/config/bootstrap/v3/*.proto;Protos/envoy/config/bootstrap/v4alpha/*.proto;
-              Protos/envoy/admin/v3/*.proto;Protos/envoy/admin/v4alpha/*.proto;
-              Protos/envoy/service/status/v3/*.proto;Protos/envoy/service/status/v4alpha/*.proto;" 
-              OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" 
-              AdditionalImportDirs="Protos/client_model" 
-              GrpcServices="Server" />
-    <Protobuf Include="Protos/google/**/*.proto" ProtoRoot="Protos"
-              Exclude="Protos/google/ads/**/*.proto;Protos/google/cloud/**/*.proto;Protos/google/devtools/**/*.proto" 
-              OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="Protos/opencensus/**/*.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="Protos/udpa/**/*.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
-    <Protobuf Include="Protos/validate/*.proto" ProtoRoot="Protos" OutputDir="$(Protobuf_OutputPath)%(RelativeDir)" />
+    <Protobuf Include="../protos/greet.proto" Link="protos/greet.proto" GrpcServices="Server" />
+    <Protobuf Include="../protos/envoy_register.proto" Link="protos/envoy_register.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Envoy.Grpc" Version="1.0.1" />
+    <PackageReference Include="Google.Api.CommonProtos" Version="2.2.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.27.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.32.0" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.32.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
   </ItemGroup>
 

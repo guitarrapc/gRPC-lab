@@ -15,6 +15,12 @@ namespace GrpcEdsService
             _logger = logger;
         }
 
+        /// <summary>
+        /// grpcurl -insecure -d '{"name": "World" }' localhost:5001 greet.Greeter.SayHello
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
         {
             return Task.FromResult(new HelloReply

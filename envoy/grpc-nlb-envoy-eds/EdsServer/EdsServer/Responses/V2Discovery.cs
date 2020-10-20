@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EdsServer.Responses
 {
-    public class V2DiscoveryEndpoints
+    public class V2DiscoveryResponse
     {
         [JsonPropertyName("version_info")]
         public string VersionInfo { get; set; } = "v1";
