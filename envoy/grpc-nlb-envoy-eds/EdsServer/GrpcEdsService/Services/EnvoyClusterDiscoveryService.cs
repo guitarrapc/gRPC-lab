@@ -4,54 +4,41 @@ using Envoy.Api.V2.Endpoint;
 using Envoy.Service.Discovery.V2;
 using Google.Appengine.V1;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Grpc.Core;
+using GrpcEdsService.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GrpcEdsService.Services
 {
     public class EnvoyClusterDiscoveryService : ClusterDiscoveryService.ClusterDiscoveryServiceBase
     {
+        private readonly ServiceVersionContext _versionContext;
+        private readonly GrpcEdsServiceModel _model;
         private readonly ILogger<EnvoyClusterDiscoveryService> _logger;
 
-        public EnvoyClusterDiscoveryService(ILogger<EnvoyClusterDiscoveryService> logger)
+        public EnvoyClusterDiscoveryService(ServiceVersionContext versionContext, GrpcEdsServiceModel model, ILogger<EnvoyClusterDiscoveryService> logger)
         {
+            _versionContext = versionContext;
+            _model = model;
             _logger = logger;
         }
 
-        public override Task<DiscoveryResponse> FetchClusters(DiscoveryRequest request, ServerCallContext context)
+        public override Task StreamClusters(IAsyncStreamReader<DiscoveryRequest> requestStream, IServerStreamWriter<DiscoveryResponse> responseStream, ServerCallContext context)
         {
-            var resourceNames = request.ResourceNames;
-            if (resourceNames == null || !resourceNames.Any())
-            {
-                throw new RpcException(new Status(StatusCode.InvalidArgument, "Service Name not provided"));
-            }
+            _logger.LogInformation(JsonSerializer.Serialize(requestStream.Current.TypeUrl));
+            return base.StreamClusters(requestStream, responseStream, context);
+        }
 
-            foreach (var resource in resourceNames)
-            {
-
-            }
-
-            var endpoint = new Endpoint
-            {
-                Address = new Address
-                {
-                    SocketAddress = new SocketAddress
-                    {
-                        Address = "127.0.0.1",
-                        PortValue = 8081,
-                    },
-                },
-            };
-            var response = new DiscoveryResponse();
-            response.Resources.Add(new Google.Protobuf.WellKnownTypes.Any
-            {
-                Value = endpoint.ToByteString(),
-            });
-            return Task.FromResult(response);
+        public override Task DeltaClusters(IAsyncStreamReader<DeltaDiscoveryRequest> requestStream, IServerStreamWriter<DeltaDiscoveryResponse> responseStream, ServerCallContext context)
+        {
+            _logger.LogInformation(JsonSerializer.Serialize(requestStream.Current.TypeUrl));
+            return base.DeltaClusters(requestStream, responseStream, context);
         }
     }
 }

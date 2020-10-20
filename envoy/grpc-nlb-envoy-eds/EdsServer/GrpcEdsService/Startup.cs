@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GrpcEdsService.Models;
 using GrpcEdsService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,9 @@ namespace GrpcEdsService
                        .AllowAnyHeader()
                        .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
             }));
+
+            services.AddSingleton<ServiceVersionContext>(new ServiceVersionContext("v1"));
+            services.AddSingleton<GrpcEdsServiceModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +53,8 @@ namespace GrpcEdsService
                 endpoints.MapGrpcService<EnvoyClusterRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 // envoy
-                endpoints.MapGrpcService<EnvoyClusterDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");
+                //endpoints.MapGrpcService<EnvoyClusterDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");
+                endpoints.MapGrpcService<EnvoyEndpointDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
                 {

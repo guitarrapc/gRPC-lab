@@ -2,6 +2,7 @@
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using GrpcEdsService.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace GrpcEdsService.Services
 {
     public class EnvoyClusterRegisterService : ClusterRegisterService.ClusterRegisterServiceBase
     {
+        private readonly GrpcEdsServiceModel _model;
         private readonly ILogger<EnvoyClusterRegisterService> _logger;
 
-        public EnvoyClusterRegisterService(ILogger<EnvoyClusterRegisterService> logger)
+        public EnvoyClusterRegisterService(GrpcEdsServiceModel model, ILogger<EnvoyClusterRegisterService> logger)
         {
+            _model = model;
             _logger = logger;
         }
 
@@ -25,59 +28,84 @@ namespace GrpcEdsService.Services
         // todo: delete endpoint (DELETE)
 
         /// <summary>
-        /// grpcurl -insecure -d '{}' localhost:5001 envoy.ClusterRegisterService.List
+        /// List all resources
         /// </summary>
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
         public override Task<RegisterListResponse> List(Empty request, ServerCallContext context)
-        {
+        {            
             var service = new Google.Protobuf.Collections.MapField<string, RegisterService>
             {
-                { "myservice", new RegisterService()
-                    {
-                        Hosts = new RegisterServiceHost
-                        {
-                            IpAddress = "127.0.0.1",
-                            Port = 8001,
-                            Tags = new RegisterServiceTags
-                            {
-                                Az = "us-east1",
-                                Canary = false,
-                                LoadBalancingWeight = 50,
-                            },
-                        },
-                    }
-                },
+               _model.Gets(),
             };
             var response = new RegisterListResponse();
-            response.Message.Add(service);
+            response.Services.Add(service);
             return Task.FromResult(response);
         }
 
         /// <summary>
-        /// grpcurl -insecure -d '{ "service_name": "myservice" }' localhost:5001 envoy.ClusterRegisterService.Get
+        /// List hosts for service
         /// </summary>
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
         public override Task<RegisterService> Get(RegisterGetRequest request, ServerCallContext context)
         {
-            var service = new RegisterService()
+            var service = _model.Get(request.ServiceName);
+            if (service != null)
             {
-                Hosts = new RegisterServiceHost
-                {
-                    IpAddress = "127.0.0.1",
-                    Port = 8001,
-                    Tags = new RegisterServiceTags
-                    {
-                        Az = "us-east1",
-                        Canary = false,
-                        LoadBalancingWeight = 50,
-                    },
-                },
-            };
-            return Task.FromResult(service);
+                return Task.FromResult(service);
+            }
+            throw new RpcException(new Status(StatusCode.NotFound, $"Service {request.ServiceName} doesn't exist."));
+        }
+
+        /// <summary>
+        /// Create a given resource
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override Task<RegisterService> Add(RegisterAddRequest request, ServerCallContext context)
+        {
+            if (!_model.Exists(request.ServiceName))
+            {
+                _model.Add(request.ServiceName, request.Service);
+                return Task.FromResult(_model.Get(request.ServiceName)!);
+            }
+            throw new RpcException(new Status(StatusCode.AlreadyExists, $"Service {request.ServiceName} already exists."));
+        }
+
+        /// <summary>
+        /// Update a given resource
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override Task<RegisterService> Update(RegisterUpdateRequest request, ServerCallContext context)
+        {
+            if (_model.Exists(request.ServiceName))
+            {
+                _model.Update(request.ServiceName, request.Service);
+                return Task.FromResult(_model.Get(request.ServiceName)!);
+            }
+            throw new RpcException(new Status(StatusCode.NotFound, $"Service {request.ServiceName} doesn't exist."));
+        }
+
+        /// <summary>
+        /// Delete a given resource
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override Task<Empty> Delete(RegisterDeleteRequest request, ServerCallContext context)
+        {
+            if (_model.Exists(request.ServiceName))
+            {
+                _model.Delete(request.ServiceName);
+                return Task.FromResult(new Empty());
+            }
+            throw new RpcException(new Status(StatusCode.NotFound, $"Service {request.ServiceName} doesn't exist."));
         }
     }
 }

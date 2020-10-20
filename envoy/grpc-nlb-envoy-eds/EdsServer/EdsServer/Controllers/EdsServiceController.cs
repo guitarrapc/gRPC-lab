@@ -60,7 +60,7 @@ namespace EdsServer.Controllers
         /// <returns></returns>
         [Route("{serviceName}")]
         [HttpPost]
-        public ActionResult<Service> Create(string serviceName, Service data)
+        public ActionResult<Service> Add(string serviceName, Service data)
         {
             if (!_model.Exists(serviceName))
             {

@@ -11,27 +11,43 @@ service ClusterRegisterService {
   // Sends a greeting
   rpc List (google.protobuf.Empty) returns (RegisterListResponse);
   rpc Get (RegisterGetRequest) returns (RegisterService);
+  rpc Add (RegisterAddRequest) returns (RegisterService);
+  rpc Update (RegisterUpdateRequest) returns (RegisterService);
+  rpc Delete (RegisterDeleteRequest) returns (google.protobuf.Empty);
 }
 
 // The request message containing the user's name.
 message RegisterGetRequest {
   string service_name = 1;
 }
+message RegisterAddRequest {
+  string service_name = 1;
+  RegisterService service = 2;
+}
+message RegisterUpdateRequest {
+  string service_name = 1;
+  RegisterService service = 2;
+}
+message RegisterDeleteRequest {
+  string service_name = 1;
+}
 
 // The response message containing the greetings.
 message RegisterListResponse {
-  map<string, RegisterService> message = 1;
+  map<string, RegisterService> services = 1;
 }
+
+// types
 message RegisterService {
-  RegisterServiceHost hosts = 1;
+  repeated RegisterServiceHost hosts = 1;
 }
 message RegisterServiceHost {
   string ip_address = 1;
-  int32 port = 2;
+  uint32 port = 2;
   RegisterServiceTags tags = 3;
 }
 message RegisterServiceTags {
   string az = 1;
   bool canary = 2;
-  int32 load_balancing_weight = 3;
+  uint32 load_balancing_weight = 3;
 }
