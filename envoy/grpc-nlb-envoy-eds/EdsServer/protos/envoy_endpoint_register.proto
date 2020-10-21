@@ -9,44 +9,44 @@ package envoy;
 // service definition.
 service EndpointRegisterService {
   // Sends a greeting
-  rpc List (google.protobuf.Empty) returns (RegisterListResponse);
-  rpc Get (RegisterGetRequest) returns (RegisterService);
-  rpc Add (RegisterAddRequest) returns (RegisterService);
-  rpc Update (RegisterUpdateRequest) returns (RegisterService);
-  rpc Delete (RegisterDeleteRequest) returns (google.protobuf.Empty);
+  rpc List (google.protobuf.Empty) returns (EndpointRegisterListResponse);
+  rpc Get (EndpointRegisterGetRequest) returns (EndpointRegisterServiceItem);
+  rpc Add (EndpointRegisterAddRequest) returns (EndpointRegisterServiceItem);
+  rpc Update (EndpointRegisterUpdateRequest) returns (EndpointRegisterServiceItem);
+  rpc Delete (EndpointRegisterDeleteRequest) returns (google.protobuf.Empty);
 }
 
 // The request message
-message RegisterGetRequest {
+message EndpointRegisterGetRequest {
   string service_name = 1;
 }
-message RegisterAddRequest {
+message EndpointRegisterAddRequest {
   string service_name = 1;
-  RegisterService service = 2;
+  EndpointRegisterServiceItem service = 2;
 }
-message RegisterUpdateRequest {
+message EndpointRegisterUpdateRequest {
   string service_name = 1;
-  RegisterService service = 2;
+  EndpointRegisterServiceItem service = 2;
 }
-message RegisterDeleteRequest {
+message EndpointRegisterDeleteRequest {
   string service_name = 1;
 }
 
 // The response message
-message RegisterListResponse {
-  map<string, RegisterService> services = 1;
+message EndpointRegisterListResponse {
+  map<string, EndpointRegisterServiceItem> services = 1;
 }
 
 // types
-message RegisterService {
-  repeated RegisterServiceHost hosts = 1;
+message EndpointRegisterServiceItem {
+  repeated EndpointRegisterHost hosts = 1;
 }
-message RegisterServiceHost {
+message EndpointRegisterHost {
   string ip_address = 1;
   uint32 port = 2;
-  RegisterServiceTags tags = 3;
+  EndpointRegisterTags tags = 3;
 }
-message RegisterServiceTags {
+message EndpointRegisterTags {
   string az = 1;
   bool canary = 2;
   uint32 load_balancing_weight = 3;

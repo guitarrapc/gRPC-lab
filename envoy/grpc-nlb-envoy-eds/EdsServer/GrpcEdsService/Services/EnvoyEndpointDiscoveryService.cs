@@ -17,11 +17,11 @@ namespace GrpcEdsService.Services
 {
     public class EnvoyEndpointDiscoveryService : EndpointDiscoveryService.EndpointDiscoveryServiceBase
     {
-        private readonly GrpcEdsServiceModel _model;
+        private readonly EdsServiceModel _model;
         private readonly ILogger<EnvoyEndpointDiscoveryService> _logger;
         private readonly ServiceVersionContext _versionContext;
 
-        public EnvoyEndpointDiscoveryService(ServiceVersionContext versionContext, GrpcEdsServiceModel model, ILogger<EnvoyEndpointDiscoveryService> logger)
+        public EnvoyEndpointDiscoveryService(ServiceVersionContext versionContext, EdsServiceModel model, ILogger<EnvoyEndpointDiscoveryService> logger)
         {
             _model = model;
             _logger = logger;

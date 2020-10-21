@@ -1,1 +1,0 @@
-cat grpcurl_json/update_myservice.json | grpcurl -plaintext -d @ localhost:8080 envoy.ClusterRegisterService.Update

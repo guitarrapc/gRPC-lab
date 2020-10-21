@@ -13,19 +13,14 @@ namespace GrpcEdsService.Services
 {
     public class EnvoyEndpointRegisterService : EndpointRegisterService.EndpointRegisterServiceBase
     {
-        private readonly GrpcEdsServiceModel _model;
+        private readonly EdsServiceModel _model;
         private readonly ILogger<EnvoyEndpointRegisterService> _logger;
 
-        public EnvoyEndpointRegisterService(GrpcEdsServiceModel model, ILogger<EnvoyEndpointRegisterService> logger)
+        public EnvoyEndpointRegisterService(EdsServiceModel model, ILogger<EnvoyEndpointRegisterService> logger)
         {
             _model = model;
             _logger = logger;
         }
-
-        // todo: get endpoint (GET)
-        // todo: add endpoint (POST)
-        // todo: update endpoint (PUT)
-        // todo: delete endpoint (DELETE)
 
         /// <summary>
         /// List all resources
@@ -33,13 +28,13 @@ namespace GrpcEdsService.Services
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Task<RegisterListResponse> List(Empty request, ServerCallContext context)
-        {            
-            var service = new Google.Protobuf.Collections.MapField<string, RegisterService>
+        public override Task<EndpointRegisterListResponse> List(Empty request, ServerCallContext context)
+        {
+            var service = new Google.Protobuf.Collections.MapField<string, EndpointRegisterServiceItem>
             {
                _model.Gets(),
             };
-            var response = new RegisterListResponse();
+            var response = new EndpointRegisterListResponse();
             response.Services.Add(service);
             return Task.FromResult(response);
         }
@@ -50,8 +45,10 @@ namespace GrpcEdsService.Services
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Task<RegisterService> Get(RegisterGetRequest request, ServerCallContext context)
+        public override Task<EndpointRegisterServiceItem> Get(EndpointRegisterGetRequest request, ServerCallContext context)
         {
+            if (string.IsNullOrEmpty(request.ServiceName))
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"{nameof(request.ServiceName)} property missing on request body."));
             var service = _model.Get(request.ServiceName);
             if (service != null)
             {
@@ -66,8 +63,10 @@ namespace GrpcEdsService.Services
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Task<RegisterService> Add(RegisterAddRequest request, ServerCallContext context)
+        public override Task<EndpointRegisterServiceItem> Add(EndpointRegisterAddRequest request, ServerCallContext context)
         {
+            if (string.IsNullOrEmpty(request.ServiceName))
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"{nameof(request.ServiceName)} property missing on request body."));
             if (!_model.Exists(request.ServiceName))
             {
                 _model.Add(request.ServiceName, request.Service);
@@ -82,8 +81,10 @@ namespace GrpcEdsService.Services
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Task<RegisterService> Update(RegisterUpdateRequest request, ServerCallContext context)
+        public override Task<EndpointRegisterServiceItem> Update(EndpointRegisterUpdateRequest request, ServerCallContext context)
         {
+            if (string.IsNullOrEmpty(request.ServiceName))
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"{nameof(request.ServiceName)} property missing on request body."));
             if (_model.Exists(request.ServiceName))
             {
                 _model.Update(request.ServiceName, request.Service);
@@ -98,8 +99,10 @@ namespace GrpcEdsService.Services
         /// <param name="request"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override Task<Empty> Delete(RegisterDeleteRequest request, ServerCallContext context)
+        public override Task<Empty> Delete(EndpointRegisterDeleteRequest request, ServerCallContext context)
         {
+            if (string.IsNullOrEmpty(request.ServiceName))
+                throw new RpcException(new Status(StatusCode.InvalidArgument, $"{nameof(request.ServiceName)} property missing on request body."));
             if (_model.Exists(request.ServiceName))
             {
                 _model.Delete(request.ServiceName);

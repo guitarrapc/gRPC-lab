@@ -7,22 +7,22 @@ using System.Linq;
 
 namespace GrpcEdsService.Models
 {
-    public class GrpcEdsServiceModel
+    public class EdsServiceModel
     {
-        private readonly ConcurrentDictionary<string, RegisterService> _services = new ConcurrentDictionary<string, RegisterService>();        
-        private readonly ILogger<GrpcEdsServiceModel> _logger;
+        private readonly ConcurrentDictionary<string, EndpointRegisterServiceItem> _services = new ConcurrentDictionary<string, EndpointRegisterServiceItem>();        
+        private readonly ILogger<EdsServiceModel> _logger;
 
-        public GrpcEdsServiceModel(ILogger<GrpcEdsServiceModel> logger)
+        public EdsServiceModel(ILogger<EdsServiceModel> logger)
         {
             _logger = logger;
         }
 
-        public IDictionary<string, RegisterService> Gets()
+        public IDictionary<string, EndpointRegisterServiceItem> Gets()
         {
             return _services.ToImmutableDictionary();
         }
         
-        public RegisterService? Get(string serviceName)
+        public EndpointRegisterServiceItem? Get(string serviceName)
         {
             return _services.TryGetValue(serviceName, out var service)
                 ? service
@@ -34,7 +34,7 @@ namespace GrpcEdsService.Models
             return _services.TryGetValue(serviceName, out var _);
         }
 
-        public void Add(string serviceName, RegisterService data)
+        public void Add(string serviceName, EndpointRegisterServiceItem data)
         {
             if (!_services.TryAdd(serviceName, data))
             {
@@ -42,7 +42,7 @@ namespace GrpcEdsService.Models
             }
         }
 
-        public void Update(string serviceName, RegisterService data)
+        public void Update(string serviceName, EndpointRegisterServiceItem data)
         {
             if (_services.TryGetValue(serviceName, out var currentValue))
             {

@@ -30,8 +30,8 @@ namespace GrpcEdsService
             }));
 
             services.AddSingleton<ServiceVersionContext>(new ServiceVersionContext("v1"));
-            services.AddSingleton<GrpcEdsServiceModel>();
-            services.AddSingleton<GrpcRdsServiceModel>();
+            services.AddSingleton<EdsServiceModel>();
+            services.AddSingleton<RdsServiceModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +52,7 @@ namespace GrpcEdsService
                 // custom
                 endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb().RequireCors("AllowAll");
                 endpoints.MapGrpcService<EnvoyEndpointRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
+                endpoints.MapGrpcService<EnvoyRouteRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 // envoy
                 endpoints.MapGrpcService<EnvoyEndpointDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");

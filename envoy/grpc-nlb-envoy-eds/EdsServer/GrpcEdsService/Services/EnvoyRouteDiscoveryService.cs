@@ -21,10 +21,10 @@ namespace GrpcEdsService.Services
     public class EnvoyRouteDiscoveryService : RouteDiscoveryService.RouteDiscoveryServiceBase
     {
         private readonly ServiceVersionContext _versionContext;
-        private readonly GrpcRdsServiceModel _model;
+        private readonly RdsServiceModel _model;
         private readonly ILogger<EnvoyRouteDiscoveryService> _logger;
 
-        public EnvoyRouteDiscoveryService(ServiceVersionContext versionContext, GrpcRdsServiceModel model, ILogger<EnvoyRouteDiscoveryService> logger)
+        public EnvoyRouteDiscoveryService(ServiceVersionContext versionContext, RdsServiceModel model, ILogger<EnvoyRouteDiscoveryService> logger)
         {
             _versionContext = versionContext;
             _model = model;
@@ -38,7 +38,7 @@ namespace GrpcEdsService.Services
                 _logger.LogInformation($"{nameof(StreamRoutes)}: request coming {string.Join(",", request.ResourceNames)}");
                 while (true)
                 {
-                    var response = FetchEndpoints(request);
+                    var response = FetchRoutes(request);
                     await responseStream.WriteAsync(response);
                     await Task.Delay(TimeSpan.FromSeconds(5));
                 }
@@ -46,11 +46,6 @@ namespace GrpcEdsService.Services
         }
 
         public override async Task<DiscoveryResponse> FetchRoutes(DiscoveryRequest request, ServerCallContext context)
-        {
-            return await base.FetchRoutes(request, context);
-        }
-
-        private DiscoveryResponse FetchEndpoints(DiscoveryRequest request)
         {
             var resourceNames = request.ResourceNames;
             if (resourceNames == null || !resourceNames.Any())
@@ -66,24 +61,9 @@ namespace GrpcEdsService.Services
 
             foreach (var r in resourceNames)
             {
-                //var service = _model.Get(r);
-                //if (service == null)
-                //    throw new ArgumentOutOfRangeException($"route config name {r} not found.");
-
-                var headers = new Dictionary<string, (string key, string value)>
-                {
-                    { "x-selector-1", ("x-selector", "1") },
-                    { "x-selector-2", ("x-selector", "2") },
-                    { "x-selector-3", ("x-selector", "3") },
-                    { "x-selector-all", ("", "") },
-                };
-                var virtualHost = GetVirtualHosts(r, headers);
-
-                var routeConfiguration = new RouteConfiguration
-                {
-                    Name = r,
-                };
-                routeConfiguration.VirtualHosts.Add(virtualHost);
+                var routeConfiguration = _model.Get(r);
+                if (routeConfiguration == null)
+                    throw new ArgumentOutOfRangeException($"route config name {r} not found.");
 
                 var routeAny = new Google.Protobuf.WellKnownTypes.Any
                 {
@@ -96,8 +76,47 @@ namespace GrpcEdsService.Services
             return response;
         }
 
-        private VirtualHost GetVirtualHosts(string r, Dictionary<string, (string key, string value)> headers)
+        private DiscoveryResponse FetchRoutes(DiscoveryRequest request)
         {
+            var resourceNames = request.ResourceNames;
+            if (resourceNames == null || !resourceNames.Any())
+            {
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Service Name not provided"));
+            }
+
+            var response = new DiscoveryResponse
+            {
+                VersionInfo = _versionContext.Version + ".RDS",
+                TypeUrl = "type.googleapis.com/envoy.api.v2.RouteConfiguration",
+            };
+
+            foreach (var r in resourceNames)
+            {
+                var routeConfiguration = _model.Get(r);
+                if (routeConfiguration == null)
+                    throw new ArgumentOutOfRangeException($"route config name {r} not found.");
+
+                var routeAny = new Google.Protobuf.WellKnownTypes.Any
+                {
+                    TypeUrl = "type.googleapis.com/envoy.api.v2.RouteConfiguration",
+                    Value = routeConfiguration.ToByteString(),
+                };
+                response.Resources.Add(routeAny);
+            }
+
+            return response;
+        }
+
+        private RouteConfiguration CreateRouteConfiguration(string r)
+        {
+            var headers = new Dictionary<string, (string key, string value)>
+            {
+                { "x-selector-1", ("x-selector", "1") },
+                { "x-selector-2", ("x-selector", "2") },
+                { "x-selector-3", ("x-selector", "3") },
+                { "x-selector-all", ("x-selector", "all") },
+                { "", ("", "") },
+            };
             var virtualHost = new VirtualHost
             {
                 Name = r,
@@ -110,7 +129,7 @@ namespace GrpcEdsService.Services
                 {
                     Prefix = "/",
                 };
-                if (!string.IsNullOrEmpty(header.Value.key))
+                if (!string.IsNullOrEmpty(header.Key))
                 {
                     var headerMatcher = new HeaderMatcher
                     {
@@ -130,7 +149,12 @@ namespace GrpcEdsService.Services
                 };
                 virtualHost.Routes.Add(route);
             }
-            return virtualHost;
+            var routeConfiguration = new RouteConfiguration
+            {
+                Name = r,
+            };
+            routeConfiguration.VirtualHosts.Add(virtualHost);
+            return routeConfiguration;
         }
     }
 }
