@@ -61,7 +61,7 @@ namespace GrpcEdsService.Services
             var cluster = request?.Node?.Cluster;
             var response = new DiscoveryResponse
             {
-                VersionInfo = _versionContext.Version,
+                VersionInfo = _versionContext.Version + ".EDS",
                 TypeUrl = "type.googleapis.com/envoy.api.v2.ClusterLoadAssignment",
             };
 
