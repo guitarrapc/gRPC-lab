@@ -111,12 +111,12 @@ namespace GrpcEdsService.Services
                         cla.Endpoints.Add(lep);
                     }
 
-                    var claAny = new Google.Protobuf.WellKnownTypes.Any
+                    var resource = new Google.Protobuf.WellKnownTypes.Any
                     {
                         TypeUrl = "type.googleapis.com/envoy.api.v2.ClusterLoadAssignment",
                         Value = cla.ToByteString(),
                     };
-                    response.Resources.Add(claAny);
+                    response.Resources.Add(resource);
                 }
             }
             return response;

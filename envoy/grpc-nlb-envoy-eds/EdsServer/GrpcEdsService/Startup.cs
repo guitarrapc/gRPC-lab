@@ -30,6 +30,7 @@ namespace GrpcEdsService
             }));
 
             services.AddSingleton<ServiceVersionContext>(new ServiceVersionContext("v1"));
+            services.AddSingleton<CdsServiceModel>();
             services.AddSingleton<EdsServiceModel>();
             services.AddSingleton<RdsServiceModel>();
         }
@@ -55,6 +56,7 @@ namespace GrpcEdsService
                 endpoints.MapGrpcService<EnvoyRouteRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 // envoy
+                endpoints.MapGrpcService<EnvoyClusterDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");
                 endpoints.MapGrpcService<EnvoyEndpointDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");
                 endpoints.MapGrpcService<EnvoyRouteDiscoveryService>().EnableGrpcWeb().RequireCors("AllowAll");
 

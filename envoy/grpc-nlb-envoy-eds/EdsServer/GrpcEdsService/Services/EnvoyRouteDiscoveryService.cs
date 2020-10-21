@@ -96,12 +96,12 @@ namespace GrpcEdsService.Services
                 if (routeConfiguration == null)
                     throw new ArgumentOutOfRangeException($"route config name {r} not found.");
 
-                var routeAny = new Google.Protobuf.WellKnownTypes.Any
+                var resource = new Google.Protobuf.WellKnownTypes.Any
                 {
                     TypeUrl = "type.googleapis.com/envoy.api.v2.RouteConfiguration",
                     Value = routeConfiguration.ToByteString(),
                 };
-                response.Resources.Add(routeAny);
+                response.Resources.Add(resource);
             }
 
             return response;
