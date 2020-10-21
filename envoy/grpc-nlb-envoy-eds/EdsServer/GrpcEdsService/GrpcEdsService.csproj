@@ -7,10 +7,10 @@
     <UserSecretsId>944fedbd-ccc4-4263-9a17-dfe449312a88</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Protobuf Include="../protos/greet.proto" Link="protos/greet.proto" GrpcServices="Server" />
-    <Protobuf Include="../protos/envoy_register.proto" Link="protos/envoy_register.proto" GrpcServices="Server" />
+    <ProtoRoot Include="../protos" />
+    <Protobuf Include="../protos/**/*.proto" Link="protos/%(RecursiveDir)%(FileName)%(Extension)" GrpcServices="Server" OutputDir="$(Protobuf_OutputPath)protos/%(RelativeDir)" />
   </ItemGroup>
 
   <ItemGroup>

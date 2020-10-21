@@ -6,8 +6,8 @@ option csharp_namespace = "GrpcEdsService";
 
 package envoy;
 
-// The greeting service definition.
-service ClusterRegisterService {
+// service definition.
+service EndpointRegisterService {
   // Sends a greeting
   rpc List (google.protobuf.Empty) returns (RegisterListResponse);
   rpc Get (RegisterGetRequest) returns (RegisterService);
@@ -16,7 +16,7 @@ service ClusterRegisterService {
   rpc Delete (RegisterDeleteRequest) returns (google.protobuf.Empty);
 }
 
-// The request message containing the user's name.
+// The request message
 message RegisterGetRequest {
   string service_name = 1;
 }
@@ -32,7 +32,7 @@ message RegisterDeleteRequest {
   string service_name = 1;
 }
 
-// The response message containing the greetings.
+// The response message
 message RegisterListResponse {
   map<string, RegisterService> services = 1;
 }

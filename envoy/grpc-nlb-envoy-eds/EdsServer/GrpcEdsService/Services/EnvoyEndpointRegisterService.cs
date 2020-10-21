@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace GrpcEdsService.Services
 {
-    public class EnvoyClusterRegisterService : ClusterRegisterService.ClusterRegisterServiceBase
+    public class EnvoyEndpointRegisterService : EndpointRegisterService.EndpointRegisterServiceBase
     {
         private readonly GrpcEdsServiceModel _model;
-        private readonly ILogger<EnvoyClusterRegisterService> _logger;
+        private readonly ILogger<EnvoyEndpointRegisterService> _logger;
 
-        public EnvoyClusterRegisterService(GrpcEdsServiceModel model, ILogger<EnvoyClusterRegisterService> logger)
+        public EnvoyEndpointRegisterService(GrpcEdsServiceModel model, ILogger<EnvoyEndpointRegisterService> logger)
         {
             _model = model;
             _logger = logger;
