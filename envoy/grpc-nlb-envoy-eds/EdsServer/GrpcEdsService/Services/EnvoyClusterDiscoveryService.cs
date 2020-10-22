@@ -59,61 +59,34 @@ namespace GrpcEdsService.Services
                 TypeUrl = "type.googleapis.com/envoy.api.v2.Cluster",
             };
 
-            var clusters = CreateCluster();
-
-            foreach (var cluster in clusters)
+            var service = _model.Gets();
+            if (service.Count == 0)
             {
-                var resource = new Google.Protobuf.WellKnownTypes.Any
+                throw new RpcException(new Status(StatusCode.NotFound, "cluster not found"));
+            }
+            else
+            {
+                foreach (var cluster in service.Values.First().Clusters)
                 {
-                    TypeUrl = "type.googleapis.com/envoy.api.v2.Cluster",
-                    Value = cluster.ToByteString(),
-                };
-                response.Resources.Add(resource);
+                    var resource = new Google.Protobuf.WellKnownTypes.Any
+                    {
+                        TypeUrl = "type.googleapis.com/envoy.api.v2.Cluster",
+                        Value = cluster.ToByteString(),
+                    };
+                    response.Resources.Add(resource);
+                }
             }
 
-            //    var service = _model.Get(r);
-            //    if (service == null)
+            //var clusters = CreateCluster();
+            //foreach (var cluster in clusters)
+            //{
+            //    var resource = new Google.Protobuf.WellKnownTypes.Any
             //    {
-            //        var cl = new Cluster
-            //        {
-            //            Name = r,
-            //        };
-            //        response.Resources.Add(new Google.Protobuf.WellKnownTypes.Any
-            //        {
-            //            Value = cl.ToByteString(),
-            //        });
-            //    }
-            //    else
-            //    {
-            //        foreach (var cluster in service.Clusters)
-            //        {
-            //            var cl = new Cluster
-            //            {
-            //                Name = r,
-            //                Type = Cluster.Types.DiscoveryType.Eds,
-            //                ConnectTimeout = Duration.FromTimeSpan(TimeSpan.FromMilliseconds(250)),
-            //                DrainConnectionsOnHostRemoval = true,
-            //            };
-            //            var healthCheck = new HealthCheck
-            //            {
-            //                Timeout = Duration.FromTimeSpan(TimeSpan.FromSeconds(1)),
-            //                Interval = Duration.FromTimeSpan(TimeSpan.FromSeconds(5)),
-            //                UnhealthyThreshold = 1,
-            //                HealthyThreshold = 1,
-            //                HttpHealthCheck = new HealthCheck.Types.HttpHealthCheck
-            //                {
-            //                    Path = "/healthz",
-            //                },
-            //            };
-
-            //            var claAny = new Google.Protobuf.WellKnownTypes.Any
-            //            {
-            //                TypeUrl = "type.googleapis.com/envoy.api.v2.Cluster",
-            //                Value = cluster.ToByteString(),
-            //            };
-            //            response.Resources.Add(claAny);
-            //        }
-            //    }
+            //        TypeUrl = "type.googleapis.com/envoy.api.v2.Cluster",
+            //        Value = cluster.ToByteString(),
+            //    };
+            //    response.Resources.Add(resource);
+            //}
 
             return response;
         }
@@ -159,7 +132,7 @@ namespace GrpcEdsService.Services
                 {
                     Name = x.Key,
                     Type = Cluster.Types.DiscoveryType.Eds,
-                    ConnectTimeout = Duration.FromTimeSpan(TimeSpan.FromMilliseconds(250)),
+                    ConnectTimeout = Duration.FromTimeSpan(TimeSpan.FromMilliseconds(500)),
                     DrainConnectionsOnHostRemoval = true,
                     EdsClusterConfig = new Cluster.Types.EdsClusterConfig
                     {

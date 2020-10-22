@@ -52,6 +52,7 @@ namespace GrpcEdsService
             {
                 // custom
                 endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb().RequireCors("AllowAll");
+                endpoints.MapGrpcService<EnvoyClusterRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
                 endpoints.MapGrpcService<EnvoyEndpointRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
                 endpoints.MapGrpcService<EnvoyRouteRegisterService>().EnableGrpcWeb().RequireCors("AllowAll");
 

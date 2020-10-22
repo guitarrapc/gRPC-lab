@@ -9,7 +9,7 @@ namespace GrpcEdsService.Models
 {
     public class CdsServiceModel
     {
-        private readonly ConcurrentDictionary<string, EndpointRegisterServiceItem> _services = new ConcurrentDictionary<string, EndpointRegisterServiceItem>();        
+        private readonly ConcurrentDictionary<string, ClusterRegisterServiceItem> _services = new ConcurrentDictionary<string, ClusterRegisterServiceItem>();
         private readonly ILogger<CdsServiceModel> _logger;
 
         public CdsServiceModel(ILogger<CdsServiceModel> logger)
@@ -17,12 +17,12 @@ namespace GrpcEdsService.Models
             _logger = logger;
         }
 
-        public IDictionary<string, EndpointRegisterServiceItem> Gets()
+        public IDictionary<string, ClusterRegisterServiceItem> Gets()
         {
             return _services.ToImmutableDictionary();
         }
         
-        public EndpointRegisterServiceItem? Get(string serviceName)
+        public ClusterRegisterServiceItem? Get(string serviceName)
         {
             return _services.TryGetValue(serviceName, out var service)
                 ? service
@@ -34,7 +34,7 @@ namespace GrpcEdsService.Models
             return _services.TryGetValue(serviceName, out var _);
         }
 
-        public void Add(string serviceName, EndpointRegisterServiceItem data)
+        public void Add(string serviceName, ClusterRegisterServiceItem data)
         {
             if (!_services.TryAdd(serviceName, data))
             {
@@ -42,7 +42,7 @@ namespace GrpcEdsService.Models
             }
         }
 
-        public void Update(string serviceName, EndpointRegisterServiceItem data)
+        public void Update(string serviceName, ClusterRegisterServiceItem data)
         {
             if (_services.TryGetValue(serviceName, out var currentValue))
             {
