@@ -1,3 +1,9 @@
+## xDS API Reference
+
+* [data-plane-api/API_OVERVIEW.md at master · envoyproxy/data-plane-api](https://github.com/envoyproxy/data-plane-api/blob/master/API_OVERVIEW.md)
+  * [EDS](https://github.com/envoyproxy/data-plane-api/blob/master/envoy/api/v2/eds.proto)
+  * [LDS](https://github.com/envoyproxy/data-plane-api/blob/master/envoy/api/v2/lds.proto)
+
 ## Patch
 
 ### Personnal image
@@ -8,6 +14,16 @@
 ```go
 - google.golang.org/grpc v1.21.0
 + google.golang.org/grpc v1.29.1
+```
+
+* eds-server
+
+```shell
+docker build -t envoy_discovery_sds_rest:3.1 -f envoy/grpc-nlb-envoy-eds/EdsServer/EdsServer/Dockerfile envoy/grpc-nlb-envoy-eds/EdsServer
+docker tag envoy_discovery_sds_rest:3.1 guitarrapc/envoy_discovery_sds_rest:3.1
+docker tag envoy_discovery_sds_rest:3.1 guitarrapc/envoy_discovery_sds_rest:latest
+docker push guitarrapc/envoy_discovery_sds_rest:3.1
+docker push guitarrapc/envoy_discovery_sds_rest:latest
 ```
 
 ### Local (could not work.....)
@@ -83,3 +99,11 @@ grpcurl -d '{"content": "echo"}' -H 'x-pod-name: echo-grpc-0' -H 'method: POST' 
 ```
 
 X-Route-Selector: vip=172.10.10.20
+
+
+
+
+
+
+
+[2020-10-19 15:10:43.893][7365][warning][config] [source/common/config/http_subscription_impl.cc:124] REST config for /v2/discovery:endpoints rejected: Unable to parse JSON as proto (INVALID_ARGUMENT:: Root element must be a message.): [{"version_info":"v1","resources":[{"@type":"type.googleapis.com/envoy.api.v2.ClusterLoadAssignment","cluster_name":"myservice","endpoint":{"lb_endpoints":[{"address":{"socket_address":{"address":"127.0.0.1","port_value":8081}}},{"address":{"socket_address":{"address":"127.0.0.1","port_value":8082}}},{"address":{"socket_address":{"address":"127.0.0.1","port_value":8083}}}]}}]}]

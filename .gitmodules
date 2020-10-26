@@ -1,0 +1,18 @@
+[submodule "submodules/envoy"]
+	path = submodules/envoy
+	url = https://github.com/envoyproxy/envoy
+[submodule "submodules/udpa"]
+	path = submodules/udpa
+	url = https://github.com/cncf/udpa
+[submodule "submodules/protoc-gen-validate"]
+	path = submodules/protoc-gen-validate
+	url = https://github.com/envoyproxy/protoc-gen-validate
+[submodule "submodules/googleapis"]
+	path = submodules/googleapis
+	url = https://github.com/googleapis/googleapis
+[submodule "submodules/opencensus-proto"]
+	path = submodules/opencensus-proto
+	url = https://github.com/census-instrumentation/opencensus-proto
+[submodule "submodules/client_model"]
+	path = submodules/client_model
+	url = https://github.com/prometheus/client_model
