@@ -18,3 +18,4 @@ services:
       dockerfile: GrpcClient/Dockerfile
     environment:
       GRPC_SERVER: grpcservice
+      GRPC_CHANNEL_OPTIONS: grpc.use_local_subchannel_pool=1
