@@ -70,14 +70,17 @@ deploy app
 kubectl kustomize ./k8s |
     sed -e "s|gcr.io/GOOGLE_CLOUD_PROJECT|guitarrapc|g" | 
     sed -e "s|<namespace>|$NAMESPACE|g" | 
-    sed -e "s|.default|.$NAMESPACE|g" |
+    sed -e "s|\.default|.$NAMESPACE|g" |
     sed -e "s|<domain>|$MY_DOMAIN|g" | 
     kubectl apply -f -
 ```
 
 ## test grpc response
 
+if local, add `127.0.0.1 envoy-proxy-edge-header.example.com` entry to /etc/hosts.
+
 ```shell
+envoy-proxy-edge-header.example.com=127.0.0.1
 grpcurl -d '{"content": "echo"}' -H 'x-pod-name: echo-grpc-0' -H 'method: POST' -proto echo-grpc/api/echo.proto -insecure -v $MY_DOMAIN:443 api.Echo/Echo
 ```
 
