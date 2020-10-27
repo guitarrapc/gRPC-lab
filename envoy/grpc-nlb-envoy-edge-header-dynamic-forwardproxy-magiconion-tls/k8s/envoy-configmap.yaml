@@ -21,12 +21,22 @@ data:
               protocol: TCP
               port_value: 10000
           filter_chains:
-            - filters:
+            transport_socket:
+              name: envoy.transport_sockets.tls
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+                common_tls_context:
+                  alpn_protocols: "h2,http/1.1"
+                  tls_certificates:
+                  - certificate_chain:
+                      filename: "/etc/ssl/envoy/tls.crt"
+                    private_key:
+                      filename: "/etc/ssl/envoy/tls.key"
+            filters:
               - name: envoy.filters.network.http_connection_manager
                 typed_config:
                   "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                   stat_prefix: ingress_http
-                  codec_type: AUTO
                   route_config:
                     name: local_route
                     virtual_hosts:
