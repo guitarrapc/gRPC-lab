@@ -70,7 +70,7 @@ deploy app
 kubectl kustomize ./k8s |
     sed -e "s|gcr.io/GOOGLE_CLOUD_PROJECT|guitarrapc|g" | 
     sed -e "s|<namespace>|$NAMESPACE|g" | 
-    sed -e "s|.default|.$NAMESPACE|g" |
+    sed -e "s|\.default|.$NAMESPACE|g" |
     sed -e "s|<domain>|$MY_DOMAIN|g" | 
     kubectl apply -f -
 ```

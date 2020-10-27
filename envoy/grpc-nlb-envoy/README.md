@@ -69,7 +69,7 @@ kubectl create secret tls envoy-certs --key privkey.pem --cert cert.pem --dry-ru
 deploy envoy
 
 ```shell
-cat k8s/envoy-configmap.yaml | sed -e "s|.default|.$NAMESPACE|g" | kubectl apply -f -
+cat k8s/envoy-configmap.yaml | sed -e "s|\.default|.$NAMESPACE|g" | kubectl apply -f -
 kubectl apply -f k8s/envoy-deployment.yaml
 ```
 

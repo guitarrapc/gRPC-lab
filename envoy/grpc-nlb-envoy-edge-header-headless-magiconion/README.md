@@ -36,7 +36,8 @@ spec:
 > https://cloud.google.com/solutions/exposing-grpc-services-on-gke-using-envoy-proxy?hl=ja
 
 ```shell
-DOCKER_BUILDKIT=1 docker build -t guitarrapc/echo-magiconion EchoGrpcMagicOnion -f EchoGrpcMagicOnion/EchoGrpcMagicOnion/Dockerfile
+DOCKER_BUILDKIT=1
+docker build -t guitarrapc/echo-magiconion EchoGrpcMagicOnion -f EchoGrpcMagicOnion/EchoGrpcMagicOnion/Dockerfile
 docker push guitarrapc/echo-magiconion
 ```
 
@@ -45,8 +46,8 @@ docker push guitarrapc/echo-magiconion
 deploy app and service.
 
 ```shell
-MY_DOMAIN=envoy-proxy-edge-header-magiconion.example.com
-NAMESPACE=grpc-nlb-envoy-edge-header-headless-magiconion
+MY_DOMAIN=dummy.example.com
+NAMESPACE=envoy-magiconion
 ```
 
 prepare ns
@@ -61,7 +62,7 @@ deploy app
 kubectl kustomize ./k8s |
     sed -e "s|gcr.io/GOOGLE_CLOUD_PROJECT|guitarrapc|g" | 
     sed -e "s|<namespace>|$NAMESPACE|g" | 
-    sed -e "s|.default|.$NAMESPACE|g" |
+    sed -e "s|\.default|.$NAMESPACE|g" |
     sed -e "s|<domain>|$MY_DOMAIN|g" | 
     kubectl apply -f -
 ```
