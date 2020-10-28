@@ -2,3 +2,4 @@
 *.cnf       text eol=lf
 *.ext       text eol=lf
 *.sh        text eol=lf
+*.yaml      text eol=lf
