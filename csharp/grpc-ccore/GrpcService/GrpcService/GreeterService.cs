@@ -24,7 +24,13 @@ namespace GrpcService
         {
             var readTask = Task.Run(async () =>
             {
-                while(await requestStream.MoveNext())
+                Console.WriteLine($"Request Header:");
+                foreach (var header in context.RequestHeaders)
+                {
+                    Console.WriteLine($"  {header.Key} = {header.Value}");
+                }
+
+                while (await requestStream.MoveNext())
                 {
                     try
                     {

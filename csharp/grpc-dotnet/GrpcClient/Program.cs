@@ -27,7 +27,11 @@ namespace GrpcClient
             Console.WriteLine("Greeting: " + reply.Message);
 
             // duplex
-            using var streaming = client.StreamingBothWays();
+            var requestHeaders = new Metadata
+            {
+                { "x-host-port", "10-0-0-10" },
+            };
+            using var streaming = client.StreamingBothWays(requestHeaders);
             var readTask = Task.Run(async () =>
             {
                 await foreach (var response in streaming.ResponseStream.ReadAllAsync())

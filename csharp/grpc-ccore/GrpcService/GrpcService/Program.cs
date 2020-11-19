@@ -7,7 +7,7 @@ namespace GrpcService
 {
     class Program
     {
-        const int Port = 30051;
+        const int Port = 5000;
 
         public static async Task Main(string[] args)
         {

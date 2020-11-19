@@ -17,8 +17,9 @@ namespace GrpcClient
             var optionsString = Environment.GetEnvironmentVariable("GRPC_CHANNEL_OPTIONS", EnvironmentVariableTarget.Process);
             var options = GetOptions(optionsString);
 
-            var r1 = RunAsync($"{host}:30051", "rc1", options);
-            var r2 = RunAsync($"{host}:30051", "rc2", options);
+            await RunAsync($"{host}:5000", "rc1", options);
+            var r1 = RunAsync($"{host}:5000", "rc1", options);
+            var r2 = RunAsync($"{host}:5000", "rc2", options);
             await Task.WhenAll(r1, r2);
         }
 
@@ -32,7 +33,11 @@ namespace GrpcClient
             Console.WriteLine("Greeting: " + reply.Message);
 
             // duplex
-            using var streaming = client.StreamingBothWays();
+            var requestHeaders = new Metadata
+            {
+                { "x-host-port", "10-0-0-10" },
+            };
+            using var streaming = client.StreamingBothWays(requestHeaders);
             var readTask = Task.Run(async () =>
             {
                 while (await streaming.ResponseStream.MoveNext())
