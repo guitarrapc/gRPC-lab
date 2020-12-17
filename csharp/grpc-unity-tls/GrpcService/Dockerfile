@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
-COPY ["GrpcService1/GrpcService1.csproj", "GrpcService1/"]
-RUN dotnet restore "GrpcService1/GrpcService1.csproj"
+COPY ["GrpcService/GrpcService.csproj", "GrpcService/"]
+RUN dotnet restore "GrpcService/GrpcService.csproj"
 COPY . .
-WORKDIR "/src/GrpcService1"
-RUN dotnet build "GrpcService1.csproj" -c Release -o /app/build
+WORKDIR "/src/GrpcService"
+RUN dotnet build "GrpcService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "GrpcService1.csproj" -c Release -o /app/publish
+RUN dotnet publish "GrpcService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "GrpcService1.dll"]
+ENTRYPOINT ["dotnet", "GrpcService.dll"]
