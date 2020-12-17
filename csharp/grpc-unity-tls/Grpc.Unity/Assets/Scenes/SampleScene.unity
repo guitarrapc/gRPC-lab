@@ -1467,7 +1467,7 @@ MonoBehaviour:
   m_LineType: 0
   m_HideMobileInput: 0
   m_CharacterValidation: 0
-  m_CharacterLimit: 0
+  m_CharacterLimit: 300
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
@@ -1891,7 +1891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _endpointLabelText: {fileID: 794802849}
-  _endpointInputText: {fileID: 498109814}
+  _endpointInputField: {fileID: 920885434}
   _outputText: {fileID: 1978074215}
   _duplexRun: {fileID: 736537450}
   _duplexCancel: {fileID: 648292169}
