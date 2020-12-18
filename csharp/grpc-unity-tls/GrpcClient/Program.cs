@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using GrpcService;
 using System;
@@ -22,6 +23,16 @@ namespace GrpcClient
         {
             // The port number(5001) must match the port of the gRPC server.
             using var channel = GrpcChannel.ForAddress(endpoint);
+
+            // health
+            var healthClient = new Health.HealthClient(channel);
+            var health = await healthClient.CheckAsync(new HealthCheckRequest
+            {
+                Service = "",
+            });
+            Console.WriteLine($"Health Status: {health.Status}");
+
+            // unary
             var client = new Greeter.GreeterClient(channel);
             var reply = await client.SayHelloAsync(new HelloRequest { Name = $"{prefix} GreeterClient" });
             Console.WriteLine("Greeting: " + reply.Message);

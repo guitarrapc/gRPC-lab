@@ -8,10 +8,12 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/certificate-arn: <acm>
     external-dns.alpha.kubernetes.io/hostname: <domain>
+    alb.ingress.kubernetes.io/healthcheck-path: "/grpc.health.v1.Health/Check"
     alb.ingress.kubernetes.io/load-balancer-attributes: routing.http2.enabled=true,idle_timeout.timeout_seconds=3600
     alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
     alb.ingress.kubernetes.io/backend-protocol: HTTP
     alb.ingress.kubernetes.io/backend-protocol-version: GRPC
+    alb.ingress.kubernetes.io/success-codes: "0"
 spec:
   rules:
     - http:

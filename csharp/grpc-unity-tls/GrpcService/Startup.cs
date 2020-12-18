@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Grpc.HealthCheck;
+using GrpcService.HostedServices;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +18,12 @@ namespace GrpcService
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHealthChecks();
+
+            services.AddSingleton<HealthServiceImpl>();
             services.AddGrpc();
+
+            services.AddHostedService<GrpcHealthCheckHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,6 +38,9 @@ namespace GrpcService
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapGrpcService<HealthServiceImpl>();
+
                 endpoints.MapGrpcService<GreeterService>();
 
                 endpoints.MapGet("/", async context =>

@@ -26,3 +26,11 @@ spec:
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
+          readinessProbe:
+            exec:
+              command: ["/bin/grpc_health_probe", "-addr=localhost:80"]
+            initialDelaySeconds: 10
+          livenessProbe:
+            exec:
+              command: ["/bin/grpc_health_probe", "-addr=localhost:80"]
+            initialDelaySeconds: 15
