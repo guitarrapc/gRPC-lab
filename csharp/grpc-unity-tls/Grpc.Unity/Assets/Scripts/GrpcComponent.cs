@@ -17,7 +17,7 @@ namespace GrpcUnitySample
         [SerializeField]
         private Text _endpointLabelText = null;
         [SerializeField]
-        private Text _endpointInputText = null;
+        private InputField _endpointInputField = null;
 
         [Header("Output")]
         [SerializeField]
@@ -39,8 +39,8 @@ namespace GrpcUnitySample
         {
             if (_endpointLabelText == null)
                 throw new ArgumentException($"{nameof(_endpointLabelText)} component is not attached to {nameof(GrpcComponent)}");
-            if (_endpointInputText == null)
-                throw new ArgumentException($"{nameof(_endpointInputText)} component is not attached to {nameof(GrpcComponent)}");
+            if (_endpointInputField == null)
+                throw new ArgumentException($"{nameof(_endpointInputField)} component is not attached to {nameof(GrpcComponent)}");
             if (_outputText == null)
                 throw new ArgumentException($"{nameof(_outputText)} component is not attached to {nameof(GrpcComponent)}");
             if (_duplexCancel == null)
@@ -51,19 +51,8 @@ namespace GrpcUnitySample
             _duplexRun.interactable = true;
             _duplexCancel.interactable = false;
 
-             _outputText.text = "";
-            _endpointLabelText.text = "Endpoint: " + _endpointInputText.text;
-            var hostPort = _endpointInputText.text.Split(':');
-            var host = hostPort[0];
-            var port = 80;
-            if (hostPort.Length == 2)
-            {
-                port = int.Parse(hostPort[1]);
-            }
-            var channelCredential = port == 443
-                ? new SslCredentials()
-                : ChannelCredentials.Insecure;
-            _channel = new Channel(host, port, channelCredential);
+            _outputText.text = "";
+            _endpointInputField.onEndEdit.AddListener(text => _endpointLabelText.text = "Endpoint: " + _endpointInputField.text);
         }
 
         async void OnDestroy()
@@ -74,18 +63,22 @@ namespace GrpcUnitySample
                 foreach (var streamingClient in _streamingClients)
                     streamingClient.Dispose();
             }
-            await _channel?.ShutdownAsync();
+            if (_channel != null)
+            {
+                await _channel.ShutdownAsync();
+            }
         }
 
         // Unary
         public async void UnaryRun()
         {
-            Debug.Log("Begin unary");
-            await Task.WhenAll(UnaryRunAsync("r1"), UnaryRunAsync("r2"));
+            var channel = await CreateChannelAsync();
+            Debug.Log($"Begin unary {channel.ResolvedTarget}");
+            await Task.WhenAll(UnaryRunAsync("r1", channel), UnaryRunAsync("r2", channel));
         }
-        private async Task UnaryRunAsync(string prefix)
+        private async Task UnaryRunAsync(string prefix, Channel channel)
         {
-            var client = new Greeter.GreeterClient(_channel);
+            var client = new Greeter.GreeterClient(channel);
             var reply = await client.SayHelloAsync(new HelloRequest { Name = $"{prefix} GreeterClient" });
             WriteLine("Unary Greeting: " + reply.Message);
         }
@@ -99,6 +92,7 @@ namespace GrpcUnitySample
                 return;
             }
 
+            Debug.Log("Duplex cancel");
             _cts?.Cancel();
             _cts?.Dispose();
             if (!_duplexRun.IsDestroyed())
@@ -109,6 +103,7 @@ namespace GrpcUnitySample
 
         public async void DuplexRun()
         {
+            _endpointLabelText.text = "Endpoint: " + _endpointInputField.text;
             if (_isDuplexRunning)
             {
                 Debug.Log($"Duplex is already running.");
@@ -121,8 +116,9 @@ namespace GrpcUnitySample
 
             try
             {
-                Debug.Log("Begin duplex");
-                await Task.WhenAll(DuplexRunAsync("r1", _channel, _cts.Token), DuplexRunAsync("r2", _channel, _cts.Token));
+                var channel = await CreateChannelAsync();
+                Debug.Log($"Begin duplex {channel.ResolvedTarget}");
+                await Task.WhenAll(DuplexRunAsync("r1", channel, _cts.Token), DuplexRunAsync("r2", channel, _cts.Token));
             }
             catch (OperationCanceledException _)
             {
@@ -141,7 +137,7 @@ namespace GrpcUnitySample
         private async Task DuplexRunAsync(string prefix, Channel channel, CancellationToken ct = default)
         {
             var context = SynchronizationContext.Current;
-            
+
             var requestHeaders = new Metadata
             {
                 { "x-host-port", "10-0-0-10" },
@@ -197,6 +193,42 @@ namespace GrpcUnitySample
             {
                 _outputText.text += $"\n{message}";
             }
+        }
+
+        private async Task<Channel> CreateChannelAsync()
+        {
+            if (_channel == null)
+            {
+                _channel = CreateChannelCore();
+                return _channel;
+            }
+            
+            if (_channel.ResolvedTarget == _endpointInputField.text)
+            {
+                return _channel;
+            }
+            else
+            {
+                await _channel.ShutdownAsync();
+                _channel = CreateChannelCore();
+                return _channel;
+            }
+        }
+
+        private Channel CreateChannelCore()
+        {
+            var hostPort = _endpointInputField.text.Split(':');
+            var host = hostPort[0];
+            var port = 80;
+            if (hostPort.Length == 2)
+            {
+                port = int.Parse(hostPort[1]);
+            }
+            var channelCredential = port == 443
+                ? new SslCredentials()
+                : ChannelCredentials.Insecure;
+            var channel = new Channel(host, port, channelCredential);
+            return channel;
         }
     }
 }

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-server
+  labels:
+    app: grpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc
+  template:
+    metadata:
+      labels:
+        app: grpc
+    spec:
+      containers:
+        - name: grpc
+          image: guitarrapc/grpc-lab-dotnet-service:2.33.1
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "200Mi"
+              cpu: "500m"
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Production
