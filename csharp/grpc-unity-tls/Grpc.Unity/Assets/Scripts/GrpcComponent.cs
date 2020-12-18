@@ -182,7 +182,7 @@ namespace GrpcUnitySample
             }
             finally
             {
-                //await _streamingClient.RequestStream.CompleteAsync();
+                await streamingClient.RequestStream.CompleteAsync();
                 await readTask;
             }
         }
