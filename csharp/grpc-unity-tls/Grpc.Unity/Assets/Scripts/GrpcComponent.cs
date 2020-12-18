@@ -51,8 +51,8 @@ namespace GrpcUnitySample
             _duplexRun.interactable = true;
             _duplexCancel.interactable = false;
 
-            _endpointInputField.onEndEdit.AddListener(text => _endpointLabelText.text = "Endpoint: " + _endpointInputField.text);
             _outputText.text = "";
+            _endpointInputField.onEndEdit.AddListener(text => _endpointLabelText.text = "Endpoint: " + _endpointInputField.text);
         }
 
         async void OnDestroy()
@@ -63,7 +63,10 @@ namespace GrpcUnitySample
                 foreach (var streamingClient in _streamingClients)
                     streamingClient.Dispose();
             }
-            await _channel?.ShutdownAsync();
+            if (_channel != null)
+            {
+                await _channel.ShutdownAsync();
+            }
         }
 
         // Unary
