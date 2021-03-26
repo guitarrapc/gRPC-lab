@@ -101,6 +101,21 @@ namespace GrpcUnitySample
                 _duplexCancel.interactable = false;
         }
 
+        private void SetDuplexCancel()
+        {
+            _duplexRun.interactable = false;
+            _duplexCancel.interactable = true;
+            _isDuplexRunning = true;
+        }
+        private void SetDuplexRun()
+        {
+            if (!_duplexRun.IsDestroyed())
+                _duplexRun.interactable = true;
+            if (!_duplexCancel.IsDestroyed())
+                _duplexCancel.interactable = false;
+            _isDuplexRunning = false;
+        }
+
         public async void DuplexRun()
         {
             _endpointLabelText.text = "Endpoint: " + _endpointInputField.text;
@@ -109,9 +124,11 @@ namespace GrpcUnitySample
                 Debug.Log($"Duplex is already running.");
                 return;
             }
-            _isDuplexRunning = true;
-            _duplexRun.interactable = false;
-            _duplexCancel.interactable = true;
+            var context = SynchronizationContext.Current;
+            context.Post(_ =>
+            {
+                SetDuplexCancel();
+            }, null);
             _cts = new CancellationTokenSource();
 
             try
@@ -126,11 +143,10 @@ namespace GrpcUnitySample
             }
             finally
             {
-                if (!_duplexRun.IsDestroyed())
-                    _duplexRun.interactable = true;
-                if (!_duplexCancel.IsDestroyed())
-                    _duplexCancel.interactable = false;
-                _isDuplexRunning = false;
+                context.Post(_ =>
+                {
+                    SetDuplexRun();
+                }, null);
                 _cts?.Dispose();
             }
         }
