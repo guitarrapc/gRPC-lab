@@ -25,6 +25,8 @@ namespace GrpcUnitySample
 
         [Header("Execute")]
         [SerializeField]
+        private Button _unaryRun = null;
+        [SerializeField]
         private Button _duplexRun = null;
         [SerializeField]
         private Button _duplexCancel = null;
@@ -48,9 +50,12 @@ namespace GrpcUnitySample
                 throw new ArgumentException($"{nameof(_duplexCancel)} component is not attached to {nameof(GrpcComponent)}");
             if (_duplexRun == null)
                 throw new ArgumentException($"{nameof(_duplexRun)} component is not attached to {nameof(GrpcComponent)}");
+            if (_unaryRun == null)
+                throw new ArgumentException($"{nameof(_unaryRun)} component is not attached to {nameof(GrpcComponent)}");
 
             _context = SynchronizationContext.Current;
 
+            _unaryRun.interactable = true;
             _duplexRun.interactable = true;
             _duplexCancel.interactable = false;
 
@@ -81,15 +86,18 @@ namespace GrpcUnitySample
         // Unary
         public async void UnaryRun()
         {
-            var channel = await CreateChannelAsync().ConfigureAwait(false);
+            var channel = await CreateChannelAsync();
             Debug.Log($"Begin unary {channel.ResolvedTarget}");
-            await Task.WhenAll(UnaryRunAsync("r1", channel), UnaryRunAsync("r2", channel)).ConfigureAwait(false);
+            await Task.WhenAll(UnaryRunAsync("r1", channel), UnaryRunAsync("r2", channel));
         }
         private async Task UnaryRunAsync(string prefix, Channel channel)
         {
             var client = new Greeter.GreeterClient(channel);
             var reply = await client.SayHelloAsync(new HelloRequest { Name = $"{prefix} GreeterClient" });
-            WriteLine("Unary Greeting: " + reply.Message);
+            _context.Post(_ =>
+            {
+                WriteLine("Unary Greeting: " + reply.Message);
+            }, null);
         }
 
         // Duplex
@@ -104,20 +112,25 @@ namespace GrpcUnitySample
             Debug.Log("Duplex cancel");
             _cts?.Cancel();
             _cts?.Dispose();
+            if (!_unaryRun.IsDestroyed())
+                _unaryRun.interactable = true;
             if (!_duplexRun.IsDestroyed())
                 _duplexRun.interactable = true;
             if (!_duplexCancel.IsDestroyed())
                 _duplexCancel.interactable = false;
         }
 
-        private void SetDuplexCancel()
+        private void SetDuplexCancelState()
         {
+            _unaryRun.interactable = false;
             _duplexRun.interactable = false;
             _duplexCancel.interactable = true;
             _isDuplexRunning = true;
         }
-        private void SetDuplexRun()
+        private void SetDuplexRunState()
         {
+            if (!_unaryRun.IsDestroyed())
+                _unaryRun.interactable = true;
             if (!_duplexRun.IsDestroyed())
                 _duplexRun.interactable = true;
             if (!_duplexCancel.IsDestroyed())
@@ -135,15 +148,15 @@ namespace GrpcUnitySample
             }
             _context.Post(_ =>
             {
-                SetDuplexCancel();
+                SetDuplexCancelState();
             }, null);
             _cts = new CancellationTokenSource();
 
             try
             {
-                var channel = await CreateChannelAsync().ConfigureAwait(false);
+                var channel = await CreateChannelAsync();
                 Debug.Log($"Begin duplex {channel.ResolvedTarget}");
-                await Task.WhenAll(DuplexRunAsync("r1", channel, _cts.Token), DuplexRunAsync("r2", channel, _cts.Token)).ConfigureAwait(false);
+                await Task.WhenAll(DuplexRunAsync("r1", channel, _cts.Token), DuplexRunAsync("r2", channel, _cts.Token));
             }
             catch (OperationCanceledException)
             {
@@ -153,7 +166,7 @@ namespace GrpcUnitySample
             {
                 _context.Post(_ =>
                 {
-                    SetDuplexRun();
+                    SetDuplexRunState();
                 }, null);
                 _cts?.Dispose();
             }
@@ -170,7 +183,7 @@ namespace GrpcUnitySample
 
             var readTask = Task.Run(async () =>
             {
-                while (await streamingClient.ResponseStream.MoveNext(ct).ConfigureAwait(false))
+                while (await streamingClient.ResponseStream.MoveNext(ct))
                 {
                     if (ct.IsCancellationRequested)
                         break;
@@ -198,14 +211,14 @@ namespace GrpcUnitySample
                     await streamingClient.RequestStream.WriteAsync(new HelloRequest
                     {
                         Name = $"streaming: {prefix} {i}",
-                    }).ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromMilliseconds(10), ct).ConfigureAwait(false);
+                    });
+                    await Task.Delay(TimeSpan.FromMilliseconds(10), ct);
                 }
             }
             finally
             {
-                await streamingClient.RequestStream.CompleteAsync().ConfigureAwait(false);
-                await readTask.ConfigureAwait(false);
+                await streamingClient.RequestStream.CompleteAsync();
+                await readTask;
             }
         }
 
@@ -231,7 +244,7 @@ namespace GrpcUnitySample
             }
             else
             {
-                await _channel.ShutdownAsync().ConfigureAwait(false);
+                await _channel.ShutdownAsync();
                 _channel = CreateChannelCore();
                 return _channel;
             }
