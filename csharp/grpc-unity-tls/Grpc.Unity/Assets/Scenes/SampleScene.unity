@@ -2018,6 +2018,7 @@ MonoBehaviour:
   _endpointLabelText: {fileID: 794802849}
   _endpointInputField: {fileID: 920885434}
   _outputText: {fileID: 1978074215}
+  _unaryRun: {fileID: 1548800864}
   _duplexRun: {fileID: 736537450}
   _duplexCancel: {fileID: 648292169}
 --- !u!1 &1356946107
@@ -2099,7 +2100,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1079571665}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999998
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2679,7 +2680,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00001917968}
+  m_AnchoredPosition: {x: 0, y: -0.000030517578}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1978074214
