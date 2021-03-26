@@ -3,6 +3,9 @@ using Grpc.Health.V1;
 using Grpc.Net.Client;
 using GrpcService;
 using System;
+using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace GrpcClient
@@ -11,8 +14,9 @@ namespace GrpcClient
     {
         static async Task Main(string[] args)
         {
+            await Task.Delay(TimeSpan.FromSeconds(3));
             var r1 = RunAsync("http://localhost:5000", "r1");
-            var r2 = RunAsync("http://localhost:5000", "r2");
+            var r2 = RunAsync("https://localhost:5001", "r2");
             await Task.WhenAll(r1, r2);
 
             Console.WriteLine("Press any key to exit...");
@@ -22,7 +26,18 @@ namespace GrpcClient
         static async Task RunAsync(string endpoint, string prefix)
         {
             // The port number(5001) must match the port of the gRPC server.
-            using var channel = GrpcChannel.ForAddress(endpoint);
+            var handler = new SocketsHttpHandler();
+            if (endpoint.StartsWith("https://"))
+            {
+                handler.SslOptions = new SslClientAuthenticationOptions
+                {
+                    RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => true,
+                };
+            }
+            using var channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions
+            {
+                HttpHandler = handler,
+            });
 
             // health
             var healthClient = new Health.HealthClient(channel);
