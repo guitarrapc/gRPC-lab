@@ -29,6 +29,7 @@ namespace GrpcUnitySample
         [SerializeField]
         private Button _duplexCancel = null;
 
+        private SynchronizationContext _context;
         private CancellationTokenSource _cts = null;
         private Channel _channel = null;
         private List<AsyncDuplexStreamingCall<HelloRequest, HelloReply>> _streamingClients = new List<AsyncDuplexStreamingCall<HelloRequest, HelloReply>>();
@@ -47,6 +48,8 @@ namespace GrpcUnitySample
                 throw new ArgumentException($"{nameof(_duplexCancel)} component is not attached to {nameof(GrpcComponent)}");
             if (_duplexRun == null)
                 throw new ArgumentException($"{nameof(_duplexRun)} component is not attached to {nameof(GrpcComponent)}");
+
+            _context = SynchronizationContext.Current;
 
             _duplexRun.interactable = true;
             _duplexCancel.interactable = false;
@@ -67,6 +70,12 @@ namespace GrpcUnitySample
             {
                 await _channel.ShutdownAsync().ConfigureAwait(false);
             }
+        }
+
+        // Text
+        public void ClearText()
+        {
+            _outputText.text = null;
         }
 
         // Unary
@@ -124,8 +133,7 @@ namespace GrpcUnitySample
                 Debug.Log($"Duplex is already running.");
                 return;
             }
-            var context = SynchronizationContext.Current;
-            context.Post(_ =>
+            _context.Post(_ =>
             {
                 SetDuplexCancel();
             }, null);
@@ -137,13 +145,13 @@ namespace GrpcUnitySample
                 Debug.Log($"Begin duplex {channel.ResolvedTarget}");
                 await Task.WhenAll(DuplexRunAsync("r1", channel, _cts.Token), DuplexRunAsync("r2", channel, _cts.Token)).ConfigureAwait(false);
             }
-            catch (OperationCanceledException _)
+            catch (OperationCanceledException)
             {
                 Debug.Log("Duplex is canceled.");
             }
             finally
             {
-                context.Post(_ =>
+                _context.Post(_ =>
                 {
                     SetDuplexRun();
                 }, null);
@@ -152,8 +160,6 @@ namespace GrpcUnitySample
         }
         private async Task DuplexRunAsync(string prefix, Channel channel, CancellationToken ct = default)
         {
-            var context = SynchronizationContext.Current;
-
             var requestHeaders = new Metadata
             {
                 { "x-host-port", "10-0-0-10" },
@@ -170,7 +176,7 @@ namespace GrpcUnitySample
                         break;
 
                     var current = streamingClient.ResponseStream.Current;
-                    context.Post((state) =>
+                    _context.Post((state) =>
                     {
                         if (!ct.IsCancellationRequested)
                         {
