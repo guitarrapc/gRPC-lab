@@ -65,16 +65,16 @@ namespace GrpcUnitySample
             }
             if (_channel != null)
             {
-                await _channel.ShutdownAsync();
+                await _channel.ShutdownAsync().ConfigureAwait(false);
             }
         }
 
         // Unary
         public async void UnaryRun()
         {
-            var channel = await CreateChannelAsync();
+            var channel = await CreateChannelAsync().ConfigureAwait(false);
             Debug.Log($"Begin unary {channel.ResolvedTarget}");
-            await Task.WhenAll(UnaryRunAsync("r1", channel), UnaryRunAsync("r2", channel));
+            await Task.WhenAll(UnaryRunAsync("r1", channel), UnaryRunAsync("r2", channel)).ConfigureAwait(false);
         }
         private async Task UnaryRunAsync(string prefix, Channel channel)
         {
@@ -116,9 +116,9 @@ namespace GrpcUnitySample
 
             try
             {
-                var channel = await CreateChannelAsync();
+                var channel = await CreateChannelAsync().ConfigureAwait(false);
                 Debug.Log($"Begin duplex {channel.ResolvedTarget}");
-                await Task.WhenAll(DuplexRunAsync("r1", channel, _cts.Token), DuplexRunAsync("r2", channel, _cts.Token));
+                await Task.WhenAll(DuplexRunAsync("r1", channel, _cts.Token), DuplexRunAsync("r2", channel, _cts.Token)).ConfigureAwait(false);
             }
             catch (OperationCanceledException _)
             {
@@ -148,7 +148,7 @@ namespace GrpcUnitySample
 
             var readTask = Task.Run(async () =>
             {
-                while (await streamingClient.ResponseStream.MoveNext())
+                while (await streamingClient.ResponseStream.MoveNext().ConfigureAwait(false))
                 {
                     if (ct.IsCancellationRequested)
                         return;
@@ -176,14 +176,14 @@ namespace GrpcUnitySample
                     await streamingClient.RequestStream.WriteAsync(new HelloRequest
                     {
                         Name = $"streaming: {prefix} {i}",
-                    });
-                    await Task.Delay(TimeSpan.FromMilliseconds(10), ct);
+                    }).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromMilliseconds(10), ct).ConfigureAwait(false);
                 }
             }
             finally
             {
-                await streamingClient.RequestStream.CompleteAsync();
-                await readTask;
+                await streamingClient.RequestStream.CompleteAsync().ConfigureAwait(false);
+                await readTask.ConfigureAwait(false);
             }
         }
 
@@ -209,7 +209,7 @@ namespace GrpcUnitySample
             }
             else
             {
-                await _channel.ShutdownAsync();
+                await _channel.ShutdownAsync().ConfigureAwait(false);
                 _channel = CreateChannelCore();
                 return _channel;
             }
