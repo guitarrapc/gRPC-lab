@@ -148,10 +148,10 @@ namespace GrpcUnitySample
 
             var readTask = Task.Run(async () =>
             {
-                while (await streamingClient.ResponseStream.MoveNext().ConfigureAwait(false))
+                while (await streamingClient.ResponseStream.MoveNext(ct).ConfigureAwait(false))
                 {
                     if (ct.IsCancellationRequested)
-                        return;
+                        break;
 
                     var current = streamingClient.ResponseStream.Current;
                     context.Post((state) =>
@@ -171,7 +171,7 @@ namespace GrpcUnitySample
                 {
                     Debug.Log($"Streaming Request {i}");
                     if (ct.IsCancellationRequested)
-                        return;
+                        break;
 
                     await streamingClient.RequestStream.WriteAsync(new HelloRequest
                     {
@@ -217,7 +217,10 @@ namespace GrpcUnitySample
 
         private Channel CreateChannelCore()
         {
-            var hostPort = _endpointInputField.text.Split(':');
+            var hostPort = _endpointInputField.text
+                .Replace("http://", "")
+                .Replace("https://", "")
+                .Split(':');
             var host = hostPort[0];
             var port = 80;
             if (hostPort.Length == 2)
