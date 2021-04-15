@@ -17,6 +17,14 @@
         },
         "EchoGrpcMagicOnion.Client": {}
       }
+    },
+    "Server+Ccore": {
+      "Projects": {
+        "EchoGrpcMagicOnion": {
+          "StartProject": true
+        },
+        "EchoGrpcMagicOnion.Client.Ccore": {}
+      }
     }
   }
 }
