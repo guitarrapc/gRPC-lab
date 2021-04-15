@@ -4,6 +4,8 @@ using Grpc.Net.Client;
 using MagicOnion.Client;
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EchoGrpcMagicOnion.Client
@@ -27,7 +29,20 @@ namespace EchoGrpcMagicOnion.Client
 
         static async Task RunAsync(string endpoint, string prefix)
         {
-            var channel = GrpcChannel.ForAddress(endpoint);
+            var channel = GrpcChannel.ForAddress(endpoint, new GrpcChannelOptions
+            {
+                HttpHandler = new SocketsHttpHandler
+                {
+                    PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+                    // grpc.keepalive_time_ms
+                    KeepAlivePingDelay = TimeSpan.FromSeconds(10),
+                    // grpc.keepalive_timeout_ms
+                    KeepAlivePingTimeout = TimeSpan.FromSeconds(10),                    
+                    // grpc.keepalive_permit_without_calls: 1 = Always
+                    KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always,
+                    EnableMultipleHttp2Connections = true
+                },
+            });
             var client = MagicOnionClient.Create<IEchoService>(channel);
             var reply = await client.EchoAsync("hogemoge");
             Console.WriteLine("Echo: " + reply);
@@ -45,7 +60,7 @@ namespace EchoGrpcMagicOnion.Client
             while (i++ < 100)
             {
                 await hubClient.SendAsync($"{prefix} {i}");
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(60));
             }
             await hubClient.LeaveAsync();
 
