@@ -27,13 +27,10 @@ namespace EchoGrpcMagicOnion
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseKestrel(options =>
+                    webBuilder.ConfigureKestrel(options =>
                     {
-                        // WORKAROUND: Accept HTTP/2 only to allow insecure HTTP/2 connections during development.
-                        options.ConfigureEndpointDefaults(endpointOptions =>
-                        {
-                            endpointOptions.Protocols = HttpProtocols.Http2;
-                        });
+                        // per channel Stream (ServerStream, ClientStream, Duplex) will cap by this value. default 100
+                        options.Limits.Http2.MaxStreamsPerConnection = 50000;
                     })
                     .UseStartup<Startup>();
                 });
